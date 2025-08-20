@@ -1,2 +1,2 @@
 # project-perdere-demo
-Hyperfixation outlet
+Hyperfixation outlet; turn-based RPG combat simulator for OCs
