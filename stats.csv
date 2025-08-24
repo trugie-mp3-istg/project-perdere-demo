@@ -1,0 +1,14 @@
+id_num,tag,name,lv,max_hp,cur_hp,atk,df,spd,direct_res,is_bleeding,bleed_res,is_burning,burn_res,na_count,na_mod,s1_count,s1_mod,s2_count,s2_mod,s3_count,s3_mod,polaris,june_charge
+0,kiri_0,Kiri,4,100,100,17,10,1,1,0,1,0,1,1,1.2,0,0,0,2,2,0.8,FALSE,
+1,june_0,June,4,80,80,24,8,1,1,0,0.75,0,1,1,0.8,3,0.5,0,0,1,0,,0
+2,lachlan_0,Lachlan,4,125,125,25,12,1,0.75,0,1,0,1,2,0.5,0,0.3,0,0,0,0.5,,
+3,emily_0,Emily,4,100,100,20,10,1,1,0,1,0,0.75,1,1,3,0.4,1,0,1,3,,
+9,test_dummy,Combat Dummy,1,999,999,5,5,1,1.5,0,1,0,1,1,1,1,1.5,2,0.75,3,0.5,,
+100,test_goon,Backstreets Rat,2,60,60,10,5,1,1,0,1,0,1,1,1,1,1,1,1.5,2,1,,
+101,test_goon2,Backstreets Mouse,2,60,60,8,8,1,1,0,1,0,1,1,1,1,1,1,1.5,2,1,,
+190,aubrey,Aubrey,4,675,675,15,10,2,1,0,1.2,0,,,,,,,,,,,
+290,dal_riata,"Dullahan, The Azure Blade",5,1100,1100,30,15,2,1,0,1,0,1.2,2,0.5,1,1.2,,,,,,
+299,jessica_0,,,,,,,,,,,,,,,,,,,,,,
+390,priam,,,,,,,,,,,,,,,,,,,,,,
+700,jessica_9,,,,,,,,,,,,,,,,,,,,,,
+777,kiri_9,D00-O-177,4,1777,1777,17,-17,3,1.1,0,1.1,0,1.1,1,1.2,,,,,,,,
