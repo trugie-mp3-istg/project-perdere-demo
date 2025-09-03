@@ -7,17 +7,24 @@ stats = pandas.read_csv("stats.csv")
 id_num = stats.id_num
 
 tag = stats.tag; name = stats.name; lv = stats.lv
-max_hp = stats.max_hp; cur_hp = stats.cur_hp; atk = stats.atk; df = stats.df; spd = stats.spd
-direct_res = stats.direct_res
-is_bleeding = stats.is_bleeding; bleed_res = stats.bleed_res
-is_burning = stats.is_burning; burn_res = stats.burn_res
+hp = stats.hp; atk = stats.atk; df = stats.df; spd = stats.spd
+direct_res = stats.direct_res; bleed_res = stats.bleed_res; burn_res = stats.burn_res
 na_count = stats.na_count; na_mod = stats.na_mod
 s1_count = stats.s1_count; s1_mod = stats.s1_mod
+s2_count = stats.s2_count; s2_mod = stats.s2_mod
+s3_count = stats.s3_count; s3_mod = stats.s3_mod
+s4_count = stats.s4_count; s4_mod = stats.s4_mod
+s5_count = stats.s5_count; s5_mod = stats.s5_mod
 
-pd_stats_column_list = [id_num, tag, name, lv, max_hp, cur_hp, atk, df, spd,
-                        direct_res, is_bleeding, bleed_res, is_burning, burn_res,
+pd_stats_column_list = [id_num, tag, name, lv,
+                        hp, atk, df, spd,
+                        direct_res, bleed_res, burn_res,
                         na_count, na_mod,
-                        s1_count, s1_mod]
+                        s1_count, s1_mod,
+                        s2_count, s2_mod,
+                        s3_count, s3_mod,
+                        s4_count, s4_mod,
+                        s5_count, s5_mod]
 
 def insert_stat_by_id_num(pd_stats_col_list, char_id_num, char_stats=None):
     """Automatically inserts a character's stats by their id_num.\n
