@@ -1,0 +1,10 @@
+@ kiri / goon, goon2, goon_2, goon2_2. Kiri loses every time if alone. There truly is strength in number.
+
+@ kiri / perd_midboss. A simple fight where Kiri can only NA or defend. If he defends from the midboss's big attack,
+he wins. Else, he loses.
+
+@ kiri, june / perd_hunter_1, perd_hunter_2, goon_1. A more typical fight in the Sixth Nest's backstreets.
+
+@ kiri, june, lachlan / dal_riata. It's extremely hard to beat him without Emily's constant fire damage and MP
+generation, so Emily joins the battle on turn 7, after Dullahan uses his big attack the first time. Takes roughly
+15 turns to beat him, with everyone but Lachlan's HP at around half.
