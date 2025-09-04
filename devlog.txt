@@ -1,9 +1,9 @@
-2025.8.13: 	First simple prototype using 3 stats: hp, atk, df, and other damage calculation mechanics.
-		    Completed a framework for ordinary attacks.
-2025.8.14: 	Completed Heal, Bleed, and Burn mechanics. Further balancing was made.
-2025.8.15: 	Completed S1 for all allies. Reorganized bits of code.
-2025.8.16:	Clean-up in code regarding parameter stats.
-		    Added some characters in csv file.
+2025.8.13:  First simple prototype using 3 stats: hp, atk, df, and other damage calculation mechanics.
+	    Completed a framework for ordinary attacks.
+2025.8.14:  Completed Heal, Bleed, and Burn mechanics. Further balancing was made.
+2025.8.15:  Completed S1 for all allies. Reorganized bits of code.
+2025.8.16:  Clean-up in code regarding parameter stats.
+	    Added some characters in csv file.
 2025.8.17:  Developed a function to insert stats automatically by searching for a character's id_num
 instead of doing it manually.
 2025.8.18:  No contribution other than finalizing skill names externally.
@@ -25,3 +25,7 @@ only differences are in texts printed and 2 parameters: count and mod.
 instances to be independent of the attack function. Its count and mod are to be parameters.
             Allies: -45 lines (including comment removal)
             Dal Riata: -12 lines
+2025.8.24:  Added new enemies and 3 new status effects: poison, blindness, and fury. Fixed allies' target selection
+function where it could only operate on greedily correct inputs and would crash otherwise.
+            Added Marcy.
+2025.8.25: Slightly buffed Dullahan's S4, and added a voiceline when triggering his extra attacks.

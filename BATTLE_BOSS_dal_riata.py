@@ -13,7 +13,7 @@ dal_riata_flavor_text_list = [
     "Lachlan appeared restless.",
     "Lachlan was losing his composure.",
     "Dullahan broke a sweat. A grin bloomed on his face.",
-    "The cold wind turned hostile. They'll have to hurry.",
+    "The cold wind turned hostile. You'll have to hurry.",
     "Both sides grew weary, one of the cold, and one of the heat."
 ]
 
@@ -24,7 +24,7 @@ while ally_party != [] and enemy_party != []:
     turn += 1; announce_new_turn(turn)
     # Flavor text
     if turn <= 7: print(dal_riata_flavor_text_list[turn - 1])
-    else: print(dal_riata_flavor_text_list[7])
+    else: print(dal_riata_flavor_text_list[-1])
     # HP
     if turn == 7 and emily not in ally_party:
         ally_party.append(emily)
@@ -43,10 +43,12 @@ while ally_party != [] and enemy_party != []:
     if ally_party:
         sleep(0.5); print("\n|| Your turn ||"); sleep(0.5)
     for ally in ally_party:
-        for speed in range(ally.spd):
-            if enemy_party:
-                ally.action_choice(ally_party, enemy_party)
-                pop_dead_man(enemy_party, True)
+        if ally.is_furious <= 0:
+            for speed in range(ally.spd):
+                if enemy_party:
+                    ally.action_choice(ally_party, enemy_party)
+                    pop_dead_man(enemy_party, True)
+        else: ally.na(enemy_party)
     pop_dead_man(enemy_party, True)
 
     # June's Skill 2 LV3 charge.
@@ -79,7 +81,7 @@ while ally_party != [] and enemy_party != []:
             if turn == 5:
                 if lachlan not in ally_party: dal_riata_s5_target = random.choice(ally_party)
                 else: dal_riata_s5_target = lachlan
-                print(f"💬 Huff... Huff... Still standing, huh...! Then s'pose all bets are off the table!")
+                print("💬 Still standing, huh...! Then all bets are off the table!")
             else: dal_riata_s5_target = random.choice(ally_party)
             print(f"Dullahan is preparing an attack against {dal_riata_s5_target.name}...\n")
         if turn % 5 == 1 and turn != 1:
@@ -88,10 +90,12 @@ while ally_party != [] and enemy_party != []:
 
         if dal_riata.s5_follow_up:
             sleep(0.5)
+            print("💬 If you wanted to win, you should've just left 'em weaklings behind!")
+            dal_riata.heal(dal_riata, 200)
             print("Dullahan is on a streak of bloodlust!")
             for i in range(2):
                 dal_riata.na(ally_party)
-                pop_dead_man(ally_party, False)
+                pop_dead_man(ally_party, False); print("")
             dal_riata.s5_follow_up = False
 
     # June's Skill 3

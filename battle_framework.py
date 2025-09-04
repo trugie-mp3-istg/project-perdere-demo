@@ -3,12 +3,12 @@ from characters_allies import *
 from characters_enemies import *
 from characters_enemies_boss import *
 
-ally_party = [kiri, june, lachlan, emily]
+ally_party = [kiri]
 ally_party_june_retreat_s3 = []
-enemy_party = [dummy]
+enemy_party = [marcy]
 
 flavor_text_list = [
-    "Placeholder flavor text 1.",
+    "Let's get this over with.",
     "Placeholder flavor text 2.",
     "Placeholder flavor text 3.",
 ]
@@ -28,10 +28,12 @@ while ally_party != [] and enemy_party != []:
     if ally_party:
         sleep(0.5); print("\n|| Your turn ||"); sleep(0.5)
     for ally in ally_party:
-        for speed in range(ally.spd):
-            if enemy_party:
-                ally.action_choice(ally_party, enemy_party)
-                pop_dead_man(enemy_party, True)
+        if ally.is_furious <= 0:
+            for speed in range(ally.spd):
+                if enemy_party:
+                    ally.action_choice(ally_party, enemy_party)
+                    pop_dead_man(enemy_party, True)
+        else: ally.na(enemy_party)
     pop_dead_man(enemy_party, True)
 
     # June's Skill 2 LV3 charge.

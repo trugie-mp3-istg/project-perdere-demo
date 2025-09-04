@@ -39,7 +39,7 @@ class Character:
 
     def calculate_damage(self, target, mod):
         """Calculates attacks. Used for normal attacks and skills."""
-        deviation = 1 + (random.random() / 5 * random.choice([1, -1])) # Damage deviates between 80% and 120%
+        deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
         base_dmg = self.atk * mod
         """How much a hit hurts on paper, not including enemies' DEF, resistances, and damage deviation."""
         lv_diff = self.compare_lv(target)
@@ -47,8 +47,7 @@ class Character:
         damage = int(round((base_dmg - target.df / 2 * target.df_mod) * lv_diff * deviation) * target.direct_res * self.dmg_multi)
         if damage < 1: damage = 1
         if target.shield_hp > 0:
-            if target.shield_hp >= damage:
-                target.shield_hp -= damage
+            if target.shield_hp >= damage: target.shield_hp -= damage
             else:
                 damage_left = damage - target.shield_hp
                 target.shield_hp -= damage - damage_left
@@ -61,7 +60,7 @@ class Character:
 
     def calculate_true_damage(self, target, mod):
         """Calculates attacks that ignore defense. Used for special attacks."""
-        deviation = 1 + (random.random() / 5 * random.choice([1, -1])) # Damage deviates between 80% and 120%
+        deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
         base_dmg = self.atk * mod
         """How much a hit hurts on paper, not including enemies' DEF, resistances, and damage deviation."""
         lv_diff = self.compare_lv(target)
@@ -82,14 +81,23 @@ class Character:
         return damage, bleed_damage
 
     def select_target_from_enemy_party(self, enemy_party):
+        """Serves as a target picker for ally skills. Does not work if ally is blinded or furious."""
         global target
-        target_list = []
-        for i in enemy_party:
-            target_list.append(i.name)
-        target_select = int(input(f"=> Who will {self.name} target? {target_list} <= "))
-        for i in enemy_party:
-            if enemy_party.index(i) == target_select - 1:
-                target = i; break
+        if self.is_blind <= 0 and self.is_furious <= 0:
+            target_list = []
+            for i in enemy_party:
+                target_list.append(i.name)
+            target_select_wip = input(f"=> Who will {self.name} target? {target_list} <= ")
+            if target_select_wip.strip().isdigit() and 1 <= int(target_select_wip) <= len(target_list):
+                target_select = int(target_select_wip)
+                for i in enemy_party:
+                    if enemy_party.index(i) == target_select - 1: target = i; break
+            else: print("(Invalid target!)"); self.select_target_from_enemy_party(enemy_party)
+
+        elif self.is_blind > 0:
+            target = random.choice(enemy_party)
+        elif self.is_furious > 0:
+            target = enemy_party[0]
         return target
 
     def func_attack(self, target, count, mod):
@@ -100,20 +108,29 @@ class Character:
             if bleed_damage > 0:
                 target.cur_hp -= bleed_damage
                 print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
+            if self.is_poisoned > 0: self.do_poison_damage()
 
     def do_bleed_damage(self, inflicted):
         """Calculates bleed damage every time the enemy is hit with a direct attack."""
-        deviation = 1 + (random.random() / 5 * random.choice([1, -1])) # Damage deviates between 80% and 120%
+        deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
         bleed_damage = round(self.lv * inflicted.bleed_res * deviation)
         if bleed_damage < 0: bleed_damage = 0
         return bleed_damage
 
     def do_burn_damage(self, inflicted):
         """Calculates burn damage at the end of each turn."""
-        deviation = 1 + (random.random() / 5 * random.choice([1, -1])) # Damage deviates between 80% and 120%
+        deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
         burn_damage = round((self.lv * self.atk / 2 * inflicted.burn_res - inflicted.df * inflicted.df_mod) * deviation)
         if burn_damage < 0: burn_damage = 0
         burning_dictionary.update({inflicted: burn_damage})
+
+    def do_poison_damage(self):
+        """Calculates poison damage every time the enemy attacks."""
+        deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
+        poison_damage = round(self.lv * deviation)
+        if poison_damage < 0: poison_damage = 0
+        self.cur_hp -= poison_damage
+        print(f"🧪 {self.name} took {poison_damage} poison DMG!")
 
     def heal(self, target, amount):
         """Calculates a healing action."""
@@ -131,11 +148,6 @@ class Character:
     def defend(self):
         self.df_mod *= 2
         return self.df_mod
-
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
 
 # Below is everything else that serves as part of a Turn Manager.
 
@@ -167,21 +179,41 @@ def announce_hp_mp(participant_list=None):
         participant_list = []
     for person in participant_list:
         if person.shield_hp <= 0:
-            if person.is_bleeding > 0 >= person.is_burning:
+            if person.is_bleeding > 0 >= person.is_burning >= person.is_poisoned:
                 print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🩸")
-            elif person.is_burning > 0 >= person.is_bleeding:
+            elif person.is_burning > 0 >= person.is_bleeding >= person.is_poisoned:
                 print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🔥")
-            elif person.is_bleeding > 0 and person.is_burning > 0:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🩸🔥")
+            elif person.is_poisoned > 0 >= person.is_bleeding >= person.is_burning:
+                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🧪")
+            elif person.is_bleeding > 0 and person.is_burning > 0 and person.is_poisoned <= 0:
+                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🩸 🔥")
+            elif person.is_bleeding > 0 and person.is_burning <= 0 and person.is_poisoned > 0:
+                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🩸 🧪")
+            elif person.is_bleeding <= 0 and person.is_burning > 0 and person.is_poisoned > 0:
+                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🔥 🧪")
+            elif person.is_bleeding > 0 and person.is_burning > 0 and person.is_poisoned > 0:
+                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🩸 🔥 🧪")
             else: print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp}")
         else:
-            if person.is_bleeding > 0 >= person.is_burning:
+            if person.is_bleeding > 0 >= person.is_burning >= person.is_poisoned:
                 print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🩸")
-            elif person.is_burning > 0 >= person.is_bleeding:
+            elif person.is_burning > 0 >= person.is_bleeding >= person.is_poisoned:
                 print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🔥")
-            elif person.is_bleeding > 0 and person.is_burning > 0:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🩸🔥")
+            elif person.is_poisoned > 0 >= person.is_bleeding >= person.is_burning:
+                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🧪")
+            elif person.is_bleeding > 0 and person.is_burning > 0 and person.is_poisoned <= 0:
+                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🩸 🔥")
+            elif person.is_bleeding > 0 and person.is_burning <= 0 and person.is_poisoned > 0:
+                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🩸 🧪")
+            elif person.is_bleeding <= 0 and person.is_burning > 0 and person.is_poisoned > 0:
+                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🔥 🧪")
+            elif person.is_bleeding > 0 and person.is_burning > 0 and person.is_poisoned > 0:
+                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🩸 🔥 🧪")
             else: print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp})")
+        if person.is_blind > 0:
+            print(f"{person.name} is blinded! Target randomized!")
+        if person.is_furious > 0:
+            print(f"{person.name} is furious! Will automatically Attack their first enemy!")
     # MP
     print(f"★ MP: {ally_mp_gauge}/10")
 
@@ -198,12 +230,16 @@ def end_turn(participant_list):
             participant_list[i].shield_hp = 0
 
         participant_list[i].is_bleeding -= 1
-        if participant_list[i].is_bleeding < 0:
-            participant_list[i].is_bleeding = 0
+        if participant_list[i].is_bleeding < 0: participant_list[i].is_bleeding = 0
 
         participant_list[i].is_burning -= 1
-        if participant_list[i].is_burning < 0:
-            participant_list[i].is_burning = 0
+        if participant_list[i].is_burning < 0: participant_list[i].is_burning = 0
+
+        participant_list[i].is_poisoned -= 1
+        if participant_list[i].is_poisoned < 0: participant_list[i].is_poisoned = 0
+
+        participant_list[i].is_blind -= 1
+        if participant_list[i].is_blind < 0: participant_list[i].is_blind = 0
 
     # Burn baby burn
     burn_no_more = [] # A list of those who are spared from burning (for now)
