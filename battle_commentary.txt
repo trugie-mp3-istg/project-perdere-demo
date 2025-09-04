@@ -1,10 +1,19 @@
-@ kiri / goon, goon2, goon_2, goon2_2. Kiri loses every time if alone. There truly is strength in number.
+@ kiri, june, lachlan, emily / dummy. Dummy has 1 normal attack and 5 skills that inflict a debuff each. Dummy
+is the strongest.
 
-@ kiri / perd_midboss. A simple fight where Kiri can only NA or defend. If he defends from the midboss's big attack,
+@ kiri / goon1_1, goon2_1, goon1_2, goon2_2. Kiri loses every time if alone. There truly is strength in number.
+
+@! kiri / perd_midboss. A simple fight where Kiri can only NA or defend. If he defends from the midboss's big attack,
 he wins. Else, he loses.
 
-@ kiri, june / perd_hunter_1, perd_hunter_2, goon_1. A more typical fight in the Sixth Nest's backstreets.
+@ kiri, june / perd_hunter_1, perd_hunter_2, goon1_1. A more typical fight in the Sixth Nest's backstreets.
 
-@ kiri, june, lachlan / dal_riata. It's extremely hard to beat him without Emily's constant fire damage and MP
+@!! kiri, june / aubrey. It's possible to beat her while brute-forcing through her poison damage, but it's very risky.
+June cannot use S3 if Kiri is defeated, while without June, Kiri can only attack with NA. Takes > 10 turns on average.
+
+@!! kiri, june, lachlan / dal_riata. It's extremely hard to beat him without Emily's constant fire damage and MP
 generation, so Emily joins the battle on turn 7, after Dullahan uses his big attack the first time. Takes roughly
-15 turns to beat him, with everyone but Lachlan's HP at around half.
+15 turns to beat him with his DF down debuff. This fight also points out how OP Lachlan's self regeneration is, so I
+nerfed his NA healing to 5%.
+
+@... kiri / marcy.

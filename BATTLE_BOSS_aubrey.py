@@ -2,13 +2,16 @@ from combat import *
 from characters_allies import *
 from characters_enemies_boss import *
 
-ally_party = [kiri]
+ally_party = [kiri, june]
 ally_party_june_retreat_s3 = []
-enemy_party = [perd_midboss]
+enemy_party = [aubrey]
 
-flavor_text_list = [
-    "That giggle won't be lasting for long.",
-    "... She might be mad."
+aubrey_flavor_text_list = [
+    "Almonds, garlics, rotten eggs.",
+    "June looked visibly agitated.",
+    "The room glowed a mysterious green.",
+    "Aubrey readied her poison bomb.",
+    "Poison damages you if you attack! Try to deal as much damage as possible with each hit."
 ]
 
 turn = 0
@@ -17,8 +20,10 @@ while ally_party != [] and enemy_party != []:
     # Turn start
     turn += 1; announce_new_turn(turn)
     # Flavor text
-    if turn != 3: print(random.choice(flavor_text_list))
-    else: print("She is preparing a powerful attack! Defend!")
+    if turn <= 4: print(aubrey_flavor_text_list[turn - 1])
+    else:
+        if turn % 4 == 0: print(aubrey_flavor_text_list[3])
+        else: print(aubrey_flavor_text_list[-1])
     # HP
     participant_list = func_participant_list(ally_party, enemy_party)
     announce_hp_mp(participant_list)
@@ -44,7 +49,7 @@ while ally_party != [] and enemy_party != []:
     if enemy_party:
         sleep(0.5); print("\n|| Enemies' turn ||"); sleep(0.5)
     for enemy in enemy_party:
-        if turn != 3:
+        if turn % 4 != 0:
             for speed in range(enemy.spd):
                 if ally_party:
                     enemy.enemy_action_random_choice(ally_party, enemy_party)
@@ -59,9 +64,7 @@ while ally_party != [] and enemy_party != []:
                         sleep(0.5)
                     print("")
                 else: break
-        else: perd_midboss.s2(ally_party); pop_dead_man(ally_party, False)
-        if turn == 2:
-            print("💬 Hey, take this seriously! I'm about to kill you!\n")
+        else: aubrey.s2(ally_party)
 
     # June's Skill 3
     if ally_party_june_retreat_s3 == [june]:

@@ -54,10 +54,44 @@ perd_midboss_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 102, perd_midboss_pd_stats)
 perd_midboss = PerdMidboss()
 
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
+class Aubrey(Character):
+    def __init__(self):
+        super().__init__(*aubrey_pd_stats, 1, 1)
+
+    def enemy_action_random_choice(self, ally_party, enemy_party):
+        available_actions = [0, 1]
+        choice = random.choice(available_actions)
+        if choice == 0: self.na(ally_party)
+        if choice == 1: self.s1(ally_party)
+        if choice == 2: self.s2(ally_party)
+
+    def na(self, ally_party):
+        """Attacks an enemy once."""
+        target = random.choice(ally_party)
+        print(f"{self.name} attacked {target.name}!")
+        self.func_attack(target, self.na_count, self.na_mod)
+
+    def s1(self, ally_party):
+        """Attacks an enemy twice. Has a chance to inflict Poison next turn."""
+        target = random.choice(ally_party)
+        print(f"{self.name} fired poison darts at {target.name}!")
+        self.func_attack(target, self.s1_count, self.s1_mod)
+        if random.random() < 0.5:
+            if target.is_poisoned <= 2: target.is_poisoned = 2
+            print(f"{target.name} is poisoned!")
+
+    def s2(self, ally_party):
+        """Attacks all enemies once, inflicting Poison 2 next turns."""
+        print(f"{self.name} threw a poison bomb!")
+        for target in ally_party:
+            print(f"{target.name} took damage!")
+            self.func_attack(target, self.s2_count, self.s2_mod)
+            if target.is_poisoned <= 3: target.is_poisoned = 3
+            print(f"{target.name} is poisoned!")
+
+aubrey_pd_stats = []
+insert_stat_by_id_num(pd_stats_column_list, 190, aubrey_pd_stats)
+aubrey = Aubrey()
 
 class DalRiata(Character):
     def __init__(self):
@@ -110,22 +144,23 @@ class DalRiata(Character):
             self.func_attack(target, self.s3_count, self.s3_mod)
 
     def s4(self, ally_party):
-        """Attacks an enemy twice with varying strength. Has a low chance to heal by damage dealt."""
+        """Attacks an enemy twice with varying strength. Has a chance to heal by double of damage dealt."""
         target = random.choice(ally_party)
         print(f"Dullahan cast ✦Fear Of Cold✦!")
         print(f"Dullahan attacked {target.name}!")
         for count in range(self.s4_count):
-            s4_mod_deviation = random.uniform(self.s4_mod - 0.2, self.s4_mod + 0.2)
-            damage, bleed_damage = self.calculate_damage(target, s4_mod_deviation)
+            damage, bleed_damage = self.calculate_damage(target, self.s4_mod + random.uniform(-0.2, 0.2))
             print(f"{damage} DMG")
             if bleed_damage > 0:
                 target.cur_hp -= bleed_damage
                 print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
-            if random.random() < 0.2:
-                self.heal(self, damage)
+            if random.random() < 0.25:
+                self.heal(self, damage * 2)
+            if self.is_poisoned > 0: self.do_poison_damage()
 
     def s5(self, ally_party, target):
-        """Attacks an enemy thrice. If target is defeated, follows up with an Attack."""
+        """Attacks an enemy thrice and heals 100 HP.
+        If target is defeated, heals another 200 HP and follows up with 2 Attacks."""
         if target not in ally_party:
             target = random.choice(ally_party)
         print(f"Dullahan used ✦Azure Blade of Fate✦ and charged at {target.name} with a deathly grin...!")
@@ -136,6 +171,8 @@ class DalRiata(Character):
             if bleed_damage > 0:
                 target.cur_hp -= bleed_damage
                 print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
+            if self.is_poisoned > 0: self.do_poison_damage()
+        self.heal(self, 100)
         if target.cur_hp <= 0 and ally_party != []:
             self.s5_follow_up = True
 

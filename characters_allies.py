@@ -17,7 +17,7 @@ class Kiri(Character):
         available_actions = {
             "na": lambda: self.na(enemy_party),
             "s1": lambda: self.s1(enemy_party),
-            "s2": lambda: self.s2(enemy_party),
+            "s2": lambda: self.s2(),
             "s3": lambda: self.s3(enemy_party),
             "df": lambda: self.defend()
         }
@@ -74,7 +74,7 @@ class Kiri(Character):
             print(f"{target.name} was dazed and will take more damage!")
             self.polaris = False
 
-    def s2(self, enemy_party):
+    def s2(self):
         """Casts a shield and gains bonus Shield HP this turn and 1 next turn. Counts as a Defend this turn.\n
         Spends Stella Polaris to gain even more bonus Shield HP and perform 1 counter-Attack when hit."""
         super().defend()
@@ -110,10 +110,9 @@ class Kiri(Character):
         super().defend()
         print(f"{self.name} guarded himself!")
 
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
+kiri_pd_stats = []
+insert_stat_by_id_num(pd_stats_column_list, 0, kiri_pd_stats)
+kiri = Kiri()
 
 class June(Character):
     def __init__(self):
@@ -223,10 +222,9 @@ class June(Character):
         super().defend()
         print(f"{self.name} guarded herself!")
 
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
+june_pd_stats = []
+insert_stat_by_id_num(pd_stats_column_list, 1, june_pd_stats)
+june = June()
 
 class Lachlan(Character):
     def __init__(self):
@@ -266,7 +264,7 @@ class Lachlan(Character):
         target = self.select_target_from_enemy_party(enemy_party)
         print(f"{self.name} attacked {target.name}!")
         self.func_attack(target, self.na_count, self.na_mod)
-        self.heal(self, 0.1 * self.max_hp)
+        self.heal(self, 0.05 * self.max_hp)
 
     def s1(self, ally_party):
         """Heals an ally by 30% of Lachlan's Max HP."""
@@ -303,10 +301,9 @@ class Lachlan(Character):
         super().defend()
         print(f"{self.name} guarded himself!")
 
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
+lachlan_pd_stats = []
+insert_stat_by_id_num(pd_stats_column_list, 2, lachlan_pd_stats)
+lachlan = Lachlan()
 
 class Emily(Character):
     def __init__(self):
@@ -363,7 +360,7 @@ class Emily(Character):
     def s2(self, ally_party):
         """Selects an ally to cheer, removing all negative status effects from said ally.
         Said ally deals +30% damage with direct attacks 1 next turn.\n
-        If Emily removes burning from herself, heal 15 HP."""
+        Heals 15 HP if Emily cheers herself."""
         cheer_target = None
         cheer_target_name = input("Who will Emily use ✦Rehearsal✦ on? ").strip().lower()
         for ally in ally_party:
@@ -377,10 +374,22 @@ class Emily(Character):
             if cheer_target.is_burning > 0:
                 cheer_target.is_burning = 0
                 if cheer_target in burning_dictionary: del burning_dictionary[cheer_target]
-                if cheer_target == self:
-                    print("Emily absorbed her burning!")
-                    self.heal(self, 15)
+                if cheer_target == self: print("Emily absorbed her burning!")
                 else: print(f"Emily cured {cheer_target.name} of burning!")
+            if cheer_target.is_poisoned > 0:
+                cheer_target.is_poisoned = 0
+                if cheer_target == self: print("Emily cured herself of poison!")
+                else: print(f"Emily cured {cheer_target.name} of poison!")
+            if cheer_target.is_blind > 0:
+                cheer_target.is_blind = 0
+                if cheer_target == self: print("Emily cured herself of blindness!")
+                else: print(f"Emily cured {cheer_target.name} of blindness!")
+            if cheer_target.is_furious > 0:
+                cheer_target.is_furious = 0
+                if cheer_target == self: print("Emily calmed down!")
+                else: print(f"Emily calmed {cheer_target.name} down!")
+            if cheer_target == self:
+                self.heal(self, 15)
             cheer_target.amber_moth = 2
             print(f"{cheer_target.name} felt encouraged! ATK up next turn!")
         else: pass
@@ -403,18 +412,6 @@ class Emily(Character):
     def defend(self):
         super().defend()
         print(f"{self.name} guarded herself!")
-
-kiri_pd_stats = []
-insert_stat_by_id_num(pd_stats_column_list, 0, kiri_pd_stats)
-kiri = Kiri()
-
-june_pd_stats = []
-insert_stat_by_id_num(pd_stats_column_list, 1, june_pd_stats)
-june = June()
-
-lachlan_pd_stats = []
-insert_stat_by_id_num(pd_stats_column_list, 2, lachlan_pd_stats)
-lachlan = Lachlan()
 
 emily_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 3, emily_pd_stats)
