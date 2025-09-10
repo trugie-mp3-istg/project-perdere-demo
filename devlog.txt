@@ -14,6 +14,7 @@ are defeated.
 2025.8.21:  Patched a few odd ends with Kiri and June's skill sets.
             Lachlan and Emily's skill sets have been finalized and patched.
             Dal Riata's gimmicks have been finalized. Further reorganization was made.
+            Nerfed Lachlan's NA healing efficiency from 10% to 5%.
 2025.8.22:  HP Announcing mechanic now announces HP's status effects as well.
             Developed an MP cost mechanic.
 2025.8.23:  Added new enemies.
@@ -21,11 +22,17 @@ are defeated.
             There is currently too much repetition in codes despite varying very little from each other:
 codes with special gimmicks aside, most simply pick a random target, run attack, proc bleed, and print some text. The
 only differences are in texts printed and 2 parameters: count and mod.
-            Solution: create a separate function for target picking, and revise text printing
-instances to be independent of the attack function. Its count and mod are to be parameters.
+            Solution: create a separate function for target picking, and revise text printing instances to be
+independent of the attack function. Its count and mod are to be parameters.
             Allies: -45 lines (including comment removal)
-            Dal Riata: -12 lines
+
 2025.8.24:  Added new enemies and 3 new status effects: poison, blindness, and fury. Fixed allies' target selection
 function where it could only operate on greedily correct inputs and would crash otherwise.
             Added Marcy.
-2025.8.25: Slightly buffed Dullahan's S4, and added a voiceline when triggering his extra attacks.
+2025.8.25:  Slightly buffed Dullahan's S4, and added a voiceline when triggering his extra attacks.
+2025.9.1:   Raised MP cost of June's S1, Lachlan's S3, and Emily's S2 by 1.
+            June's S3 now requires manual activation.
+            Old burn damage logic patched, which used to deal too much damage due to miscalculations.
+2025.9.2:   Lurking Beast's battle has been finished. Nerfed Lachlan's S3 healing efficiency from 50% to 40%.
+            As June's S3 now requires an additional turn to use, most fights have been rebalanced around her nerf.
+            Emily's S2 heal is now party-applicable, not just on herself.

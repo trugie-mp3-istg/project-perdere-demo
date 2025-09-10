@@ -3,12 +3,13 @@ from characters_allies import *
 from characters_enemies import *
 from characters_enemies_boss import *
 
-ally_party = [kiri]
+ally_party = [kiri, june, lachlan, emily]
 ally_party_june_retreat_s3 = []
-enemy_party = [marcy]
+enemy_party = [dummy, goon1_1, goon1_2, goon2_1, goon2_2]
 
 flavor_text_list = [
     "Let's get this over with.",
+    "Placeholder flavor text 1.",
     "Placeholder flavor text 2.",
     "Placeholder flavor text 3.",
 ]
@@ -33,11 +34,12 @@ while ally_party != [] and enemy_party != []:
                 if enemy_party:
                     ally.action_choice(ally_party, enemy_party)
                     pop_dead_man(enemy_party, True)
-        else: ally.na(enemy_party)
+        else: ally.na(enemy_party); pop_dead_man(enemy_party, True)
+        print("")
     pop_dead_man(enemy_party, True)
 
-    # June's Skill 2 LV3 charge.
-    if june.red_dusk_s2_retreat:
+    # June's Skill 3 LV3 charge.
+    if june.red_dusk_s3_retreat:
         ally_party.pop(ally_party.index(june))
         ally_party_june_retreat_s3.append(june)
 
@@ -63,7 +65,7 @@ while ally_party != [] and enemy_party != []:
     # June's Skill 3
     if ally_party_june_retreat_s3 == [june]:
         sleep(0.5)
-        june.s3(enemy_party)
+        june.s3_strike(enemy_party)
         ally_party_june_retreat_s3.pop(0)
         if kiri in ally_party: ally_party.insert(1, june)
         else: ally_party.insert(0, june)

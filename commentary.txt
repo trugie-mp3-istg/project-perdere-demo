@@ -1,0 +1,42 @@
+@ dummy.
+Dummy has 1 normal attack and 5 skills that inflict a debuff each.
+Dummy is the strongest.
+
+@ goon1_1, goon2_1, goon1_2, goon2_2: Perdor goon variants.
+There truly is strength in number.
+
+@! perd_midboss. Kiri fights this woman alone in a simple fight where he can only NA or defend.
+If he defends from the midboss's big attack, he wins. Else, he loses.
+
+@ perd_hunter_1, perd_hunter_2: Perdor enemy variants with higher stats overall.
+Attacks are high-damaging but have a chance to miss.
+
+@!! aubrey. Kiri and June team up.
+The idea is to defend while stacking up on June's S2 charges until she can S3, since Aubrey's main damage output
+comes from Poison. Her direct hits are low-damaging, and she does not proc Bleed on her own.
+It's possible to beat her while brute-forcing through her Poison damage, but it's very risky.
+June cannot use S3 if Kiri is defeated, while without June, Kiri can only attack with NA.
+Takes a bit over 10 turns.
+
+@# abno_wolf.
+Designed with the participation of all 4 members in mind, especially Kiri and his S2, which is key to stopping
+the big dash attack every 6 turns.
+Has 3 phases, starting at 100%, 60%, and 30% HP, respectively.
+1st phase is mainly a warmup exercise.
+2nd phase is manageable. Party members' HP must be kept above half, as the wolf's increased SPD means higher chance
+of spamming its Bleed attack, as well as proc'ing Bleed more frequently overall. Dash attack must be Kiri-S2'd or
+Defended against.
+3rd phase must be dealt with as quickly as possible, as its howl attack can and will throw off any strategy with
+its Bleed proc'ing and Furious status effect, preventing allies from defending or healing.
+Takes 20-25 turns to beat.
+
+@!! dal_riata. Kiri, June, and Lachlan team up initially.
+It's extremely hard to beat him without Emily's constant fire damage and MP generation, so Emily joins the battle on
+turn 7, after Dullahan uses his big attack the first time and becomes exhausted afterward.
+Dullahan uses a wide range of high-frequency skills that inflict and proc Bleed, requiring careful MP management
+between healing and attacking.
+Negligence of healing is punished with his big attack every 5 turns. If he successfully defeats an ally, he heals
+greatly and follows up with 2 random attacks, further devastating allies' formation.
+Takes roughly 20 turns.
+
+@ kiri / marcy. Formatted like a fight, but it's just a dialogue exchange in a final encounter post-Pacifist run.

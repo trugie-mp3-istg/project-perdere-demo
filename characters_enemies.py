@@ -4,7 +4,7 @@ from pd_parameter_stats import *
 
 class Dummy(Character):
     def __init__(self):
-        super().__init__(*dummy_pd_stats,1, 1)
+        super().__init__(*dummy_pd_stats)
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
         available_actions = [0, 1, 2, 3, 4, 5]
@@ -49,19 +49,22 @@ class Dummy(Character):
         print(f"{target.name} is poisoned!")
 
     def s4(self, ally_party):
-        """Barely attacks an enemy once, inflicting Blind 1 next turn."""
+        """Barely attacks an enemy once. Has a chance to inflict Blind 1 next turn."""
         target = random.choice(ally_party)
         print(f"{self.name} tear-gassed {target.name}!")
         self.func_attack(target, self.s4_count, self.s4_mod)
-        if target.is_blind <= 2: target.is_blind = 2
-        print(f"{target.name} is blinded!")
+        if random.random() < 0.5:
+            if target.is_blind <= 2: target.is_blind = 2
+            print(f"{target.name} is blinded!")
 
     def s5(self, ally_party):
+        """Barely attacks an enemy twice. Has a chance to inflict Furious 1 next turn."""
         target = random.choice(ally_party)
-        print(f"{self.name} flipped off {target.name}!")
+        print(f"{self.name} taunted {target.name}!")
         self.func_attack(target, self.s5_count, self.s5_mod)
-        if target.is_furious <= 2: target.is_furious = 2
-        print(f"{target.name} is furious!")
+        if random.random() < 0.5:
+            if target.is_furious <= 2: target.is_furious = 2
+            print(f"{target.name} is furious!")
 
 dummy_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 9, dummy_pd_stats)
@@ -69,7 +72,7 @@ dummy = Dummy()
 
 class Goon(Character):
     def __init__(self):
-        super().__init__(*goon_pd_stats,1, 1)
+        super().__init__(*goon_pd_stats)
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
         available_actions = [0, 1]
@@ -96,7 +99,7 @@ goon1_2 = Goon()
 
 class Goon2(Character):
     def __init__(self):
-        super().__init__(*goon2_pd_stats,1, 1)
+        super().__init__(*goon2_pd_stats)
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
         available_actions = [0, 1]
@@ -123,7 +126,7 @@ goon2_2 = Goon2()
 
 class PerdHunter(Character):
     def __init__(self):
-        super().__init__(*perd_hunter_pd_stats, 1, 1)
+        super().__init__(*perd_hunter_pd_stats)
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
         available_actions = [0, 1]
@@ -160,7 +163,7 @@ perd_hunter_2 = PerdHunter()
 
 class Marcy(Character):
     def __init__(self):
-        super().__init__(*marcy_pd_stats,1, 1)
+        super().__init__(*marcy_pd_stats)
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
         available_actions = [0, 1]
@@ -180,6 +183,7 @@ class Marcy(Character):
     def s1(self, ally_party):
         """..."""
         target = random.choice(ally_party)
+        print("The sun shone brightly through her cloud-white hair.")
         for count in range(self.s2_count):
             self.heal(target, self.s2_mod)
 

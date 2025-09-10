@@ -6,7 +6,7 @@ from pd_parameter_stats import *
 
 class Kiri(Character):
     def __init__(self):
-        super().__init__(*kiri_pd_stats, 1, 1)
+        super().__init__(*kiri_pd_stats)
         self.polaris = False
         self.polaris_s2_shield_hp_detect_hit = 0
         self.amber_moth = 0
@@ -69,7 +69,7 @@ class Kiri(Character):
 
         # Stella Polaris' effect.
         if self.polaris:
-            target.df_mod *= 0.7
+            target.df_multi *= 0.7
             print("Kiri consumed Stella Polaris!")
             print(f"{target.name} was dazed and will take more damage!")
             self.polaris = False
@@ -116,9 +116,9 @@ kiri = Kiri()
 
 class June(Character):
     def __init__(self):
-        super().__init__(*june_pd_stats, 1, 1)
+        super().__init__(*june_pd_stats)
         self.red_dusk = 0
-        self.red_dusk_s2_retreat = False
+        self.red_dusk_s3_retreat = False
         self.amber_moth = 0
 
     def action_choice(self, ally_party, enemy_party):
@@ -127,13 +127,13 @@ class June(Character):
         available_actions = {
             "na": lambda: self.na(enemy_party),
             "s1": lambda: self.s1(enemy_party),
-            "s2": lambda: self.s2(ally_party),
-            "s3": lambda: self.s3(enemy_party),
+            "s2": lambda: self.s2(),
+            "s3": lambda: self.s3(ally_party),
             "df": lambda: self.defend()
         }
         action_cost = {
             "na": -1,
-            "s1": 3,
+            "s1": 4,
             "s2": 3,
             "s3": 0,
             "df": -1
@@ -164,27 +164,21 @@ class June(Character):
         Character.do_bleed_damage(self, target)
         if target.is_bleeding > 0: print(f"{target.name} is bleeding!")
 
-    def s2(self, ally_party):
+    def s2(self):
         """LV1: Charges up. Attacks deal slightly more damage.\n
         LV2: Charges up. Attacks deal moderately more damage.\n
-        LV3: Retreats this turn.
-        Enemies cannot target June, nor can the party order June to act.
-        Cannot charge up to LV3 if June is the only remaining ally."""
+        LV3: Prepares for a powerful strike.\n
+        Using Skill 2 while it's at LV3 heals 15 HP."""
 
         self.red_dusk += 1
         self.s2_update_mod()
         if self.red_dusk == 1: print("June used ✦Heartless✦! ATK up!")
         if self.red_dusk == 2: print("June used ✦Heartless✦ again! ATK up even more!")
-        if self.red_dusk == 3:
-            if ally_party != [june]:
-                print("June is retreating to prepare a powerful strike...")
-                self.red_dusk_s2_retreat = True
-            else:
-                self.red_dusk = 2
-                print("Cannot act, as June is the only party member left!")
+        if self.red_dusk == 3: print("June used ✦Heartless✦ yet again! June found the right opportunity to strike!")
         if self.red_dusk > 3:
             self.red_dusk = 3
-            print("June has already retreated!")
+            print("June took a breather!")
+            self.heal(self, 15)
 
     def s2_update_mod(self):
         if self.red_dusk == 0: self.na_mod = 0.8;   self.s1_mod = 0.6;  self.s3_mod = 0
@@ -192,31 +186,46 @@ class June(Character):
         if self.red_dusk == 2: self.na_mod = 1;     self.s1_mod = 1;    self.s3_mod = 0
         if self.red_dusk == 3: self.na_mod = 1;     self.s1_mod = 1;    self.s3_mod = 6
 
-    def s3(self, enemy_party):
-        """Only usable with Skill 2's LV3 effect active. Automatically activates.\n
-        Attacks the enemy with the highest HP once, dealing massive damage and ignoring enemy's defense.
-        On use, resets Skill 2's charges to LV0."""
-        if self.red_dusk != 3: print("June has yet found the right opportunity to strike!")
-        else:
-            # Select target.
-            max_hp_find = []
-            for enemy in enemy_party: max_hp_find.append(enemy.cur_hp)
-            max_hp_found = max(max_hp_find)
-            for enemy in enemy_party:
-                if enemy.cur_hp == max_hp_found:
-                    target = enemy; break
-            print("..."); sleep(0.5); print("...!"); sleep(0.5)
-            print(f"June used ✦Endless Red✦ and is charging at {target.name} with immense speed...!"); sleep(0.5)
-            for count in range(self.s3_count):
-                damage, bleed_damage = self.calculate_true_damage(target, self.s3_mod)
-                print(f"{damage} DMG")
-                if bleed_damage > 0:
-                    target.cur_hp -= bleed_damage
-                    print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
-            self.red_dusk = 0
-            self.s2_update_mod()
-            self.red_dusk_s2_retreat = False
-            print("June lost ATK up!")
+    def s3(self, ally_party):
+        if ally_party != [june]:
+            if self.red_dusk == 3:
+                print("June is retreating to prepare a powerful strike...")
+                self.red_dusk_s3_retreat = True
+            else: print("June has yet found the right opportunity to strike...")
+        else: print("Cannot retreat, as June is the only party member left!")
+
+    def s3_strike(self, enemy_party):
+        """Only usable with Skill 2's LV3 effect active and at least one other ally remaining.\n
+        Retreats this turn. At turn end, attacks the enemy with the highest HP once,
+        dealing massive damage and ignoring enemy's defense. On use, resets Skill 2's charges to LV0."""
+        # Select target.
+        max_hp_find = []
+        for enemy in enemy_party: max_hp_find.append(enemy.cur_hp)
+        max_hp_found = max(max_hp_find)
+        for enemy in enemy_party:
+            if enemy.cur_hp == max_hp_found:
+                target = enemy; break
+        print("..."); sleep(0.5); print("...!"); sleep(0.5)
+        print(f"June used ✦Endless Red✦ and is charging at {target.name} with immense speed...!"); sleep(0.5)
+        for count in range(self.s3_count):
+            damage, bleed_damage = self.calculate_true_damage(target, self.s3_mod)
+            print(f"{damage} DMG")
+            if bleed_damage > 0:
+                target.cur_hp -= bleed_damage
+                print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
+            # Poison damage:
+            if self.is_poisoned > 0: self.do_poison_damage()
+            # If target has damage reflection:
+            if target.dmg_reflect_multi > 0:
+                if random.random() < target.dmg_reflect_chance:
+                    damage_reflected = round(damage * target.dmg_reflect_multi)
+                    self.cur_hp -= damage_reflected
+                    print(f"{self.name}'s attack was reflected back to sender!")
+                    print(f"{damage_reflected} DMG ⊻")
+        self.red_dusk = 0
+        self.s2_update_mod()
+        self.red_dusk_s3_retreat = False
+        print("June lost ATK up!")
 
     def defend(self):
         super().defend()
@@ -228,7 +237,7 @@ june = June()
 
 class Lachlan(Character):
     def __init__(self):
-        super().__init__(*lachlan_pd_stats, 1, 1)
+        super().__init__(*lachlan_pd_stats)
         self.teal_blade = 0
         self.amber_moth = 0
 
@@ -246,7 +255,7 @@ class Lachlan(Character):
             "na": -1,
             "s1": 3,
             "s2": 2,
-            "s3": 7,
+            "s3": 8,
             "df": -1
         }
         global ally_mp_gauge
@@ -292,7 +301,7 @@ class Lachlan(Character):
         else:                       self.na_count = 3; self.na_mod = 0.6; self.heal_multi = 0.5
 
     def s3(self, ally_party):
-        """Heals all allies by 50% of Lachlan's Max HP."""
+        """Heals all allies by 40% of Lachlan's Max HP."""
         print("Lachlan cast ✦Ex Undis✦!")
         self.s2_update_mod()
         for ally in ally_party: self.heal(ally, self.s3_mod * self.max_hp)
@@ -307,7 +316,7 @@ lachlan = Lachlan()
 
 class Emily(Character):
     def __init__(self):
-        super().__init__(*emily_pd_stats, 1, 1)
+        super().__init__(*emily_pd_stats)
         self.amber_moth = 0
 
     def action_choice(self, ally_party, enemy_party):
@@ -323,7 +332,7 @@ class Emily(Character):
         action_cost = {
             "na": -1,
             "s1": 3,
-            "s2": 2,
+            "s2": 3,
             "s3": 7,
             "df": -1
         }
@@ -358,9 +367,8 @@ class Emily(Character):
                 print(f"{target.name} is burning!")
 
     def s2(self, ally_party):
-        """Selects an ally to cheer, removing all negative status effects from said ally.
-        Said ally deals +30% damage with direct attacks 1 next turn.\n
-        Heals 15 HP if Emily cheers herself."""
+        """Selects an ally to cheer, removing all negative status effects from said ally and heals said ally by 15 HP.
+        Said ally deals +30% damage with direct attacks 1 next turn."""
         cheer_target = None
         cheer_target_name = input("Who will Emily use ✦Rehearsal✦ on? ").strip().lower()
         for ally in ally_party:
@@ -388,8 +396,7 @@ class Emily(Character):
                 cheer_target.is_furious = 0
                 if cheer_target == self: print("Emily calmed down!")
                 else: print(f"Emily calmed {cheer_target.name} down!")
-            if cheer_target == self:
-                self.heal(self, 15)
+            self.heal(cheer_target, 15)
             cheer_target.amber_moth = 2
             print(f"{cheer_target.name} felt encouraged! ATK up next turn!")
         else: pass
