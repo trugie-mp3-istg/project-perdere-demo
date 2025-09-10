@@ -5,20 +5,28 @@ class Character:
 
     def __init__(self, tag, name, lv, hp, atk, df, spd,
                  direct_res, bleed_res, burn_res,
-                 na_count, na_mod,
-                 s1_count, s1_mod,
-                 s2_count, s2_mod,
-                 s3_count, s3_mod,
-                 s4_count, s4_mod,
-                 s5_count, s5_mod,
-                 dmg_multi, heal_multi):
-        self.tag = tag; self.name = name; self.lv = lv
-        self.max_hp = int(hp); self.cur_hp = int(hp)
+                 na_count, na_mod, s1_count, s1_mod,
+                 s2_count, s2_mod, s3_count, s3_mod,
+                 s4_count, s4_mod, s5_count, s5_mod):
+        # Identification tag and displayed name:
+        self.tag = tag; self.name = name
+
+        # Raw stats attributes:
+        self.lv = lv; self.max_hp = int(hp); self.cur_hp = int(hp)
         self.shield_hp = 0; self.shield_duration = 0
-        self.atk = int(atk); self.df = int(df); self.df_mod = 1; self.spd = int(spd)
+        self.atk = int(atk); self.df = int(df)
+        self.spd = int(spd)
+
+        # Direct attacks, bleed, and burn resistance attributes:
         self.direct_res = direct_res
-        self.is_bleeding = 0; self.bleed_res = bleed_res
-        self.is_burning = 0; self.burn_res = burn_res
+        self.bleed_res = bleed_res
+        self.burn_res = burn_res
+
+        # Status effect attributes:
+        self.is_bleeding = 0; self.is_burning = 0
+        self.is_poisoned = 0; self.is_blind = 0; self.is_furious = 0
+
+        # Attacks and skills' attributes:
         self.na_count = int(na_count); self.na_mod = na_mod
         self.s1_count = int(s1_count); self.s1_mod = s1_mod
         self.s2_count = int(s2_count); self.s2_mod = s2_mod
@@ -27,9 +35,8 @@ class Character:
         self.s5_count = int(s5_count); self.s5_mod = s5_mod
 
         # Miscellaneous attributes:
-        self.is_poisoned = 0; self.is_blind = 0; self.is_furious = 0
-
-        self.dmg_multi = dmg_multi; self.heal_multi = heal_multi
+        self.dmg_multi = 1; self.heal_multi = 1; self.df_multi = 1
+        self.dmg_reflect_chance = 0; self.dmg_reflect_multi = 0
 
     def compare_lv(self, target):
         """For damage calculation purposes: +10% damage per level difference."""
@@ -44,13 +51,14 @@ class Character:
         """How much a hit hurts on paper, not including enemies' DEF, resistances, and damage deviation."""
         lv_diff = self.compare_lv(target)
 
-        damage = int(round((base_dmg - target.df / 2 * target.df_mod) * lv_diff * deviation) * target.direct_res * self.dmg_multi)
+        damage = int(round((base_dmg - target.df / 2 * target.df_multi) * lv_diff * deviation) * target.direct_res * self.dmg_multi)
         if damage < 1: damage = 1
         if target.shield_hp > 0:
             if target.shield_hp >= damage: target.shield_hp -= damage
             else:
                 damage_left = damage - target.shield_hp
                 target.shield_hp -= damage - damage_left
+                print(f"{target.name}'s shield broke!")
                 target.cur_hp -= damage_left
         else: target.cur_hp -= damage
 
@@ -59,7 +67,7 @@ class Character:
         return damage, bleed_damage
 
     def calculate_true_damage(self, target, mod):
-        """Calculates attacks that ignore defense. Used for special attacks."""
+        """Calculates attacks that ignore defense. Used for certain attacks."""
         deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
         base_dmg = self.atk * mod
         """How much a hit hurts on paper, not including enemies' DEF, resistances, and damage deviation."""
@@ -73,6 +81,7 @@ class Character:
             else:
                 damage_left = damage - target.shield_hp
                 target.shield_hp -= damage - damage_left
+                print(f"{target.name}'s shield broke!")
                 target.cur_hp -= damage_left
         else: target.cur_hp -= damage
 
@@ -108,7 +117,15 @@ class Character:
             if bleed_damage > 0:
                 target.cur_hp -= bleed_damage
                 print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
+            # Poison damage:
             if self.is_poisoned > 0: self.do_poison_damage()
+            # If target has damage reflection:
+            if target.dmg_reflect_multi > 0:
+                if random.random() < target.dmg_reflect_chance:
+                    damage_reflected = round(damage * target.dmg_reflect_multi)
+                    self.cur_hp -= damage_reflected
+                    print(f"{self.name}'s attack was reflected back to sender!")
+                    print(f"{damage_reflected} DMG ⊻")
 
     def do_bleed_damage(self, inflicted):
         """Calculates bleed damage every time the enemy is hit with a direct attack."""
@@ -120,7 +137,7 @@ class Character:
     def do_burn_damage(self, inflicted):
         """Calculates burn damage at the end of each turn."""
         deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
-        burn_damage = round((self.lv * self.atk / 2 * inflicted.burn_res - inflicted.df * inflicted.df_mod) * deviation)
+        burn_damage = round((self.lv * self.atk / 2 - inflicted.df * inflicted.df_multi) * inflicted.burn_res * deviation)
         if burn_damage < 0: burn_damage = 0
         burning_dictionary.update({inflicted: burn_damage})
 
@@ -146,8 +163,8 @@ class Character:
             print(f"🞧 {target.name}'s HP was maxed out!")
 
     def defend(self):
-        self.df_mod *= 2
-        return self.df_mod
+        self.df_multi *= 2
+        return self.df_multi
 
 # Below is everything else that serves as part of a Turn Manager.
 
@@ -211,9 +228,9 @@ def announce_hp_mp(participant_list=None):
                 print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🩸 🔥 🧪")
             else: print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp})")
         if person.is_blind > 0:
-            print(f"{person.name} is blinded! Target randomized!")
+            print(f"{person.name} is Blinded! Target randomized!")
         if person.is_furious > 0:
-            print(f"{person.name} is furious! Will automatically Attack their first enemy!")
+            print(f"{person.name} is Furious and will automatically Attack their first enemy!")
     # MP
     print(f"★ MP: {ally_mp_gauge}/10")
 
@@ -222,7 +239,7 @@ def end_turn(participant_list):
 
     # Refreshes (or reduces) temporary variables.
     for i in range(len(participant_list)):
-        participant_list[i].df_mod = 1
+        participant_list[i].df_multi = 1
 
         participant_list[i].shield_duration -= 1
         if participant_list[i].shield_duration <= 0:
@@ -241,6 +258,9 @@ def end_turn(participant_list):
         participant_list[i].is_blind -= 1
         if participant_list[i].is_blind < 0: participant_list[i].is_blind = 0
 
+        participant_list[i].is_furious -= 1
+        if participant_list[i].is_furious < 0: participant_list[i].is_furious = 0
+
     # Burn baby burn
     burn_no_more = [] # A list of those who are spared from burning (for now)
     for victim in burning_dictionary:
@@ -253,7 +273,7 @@ def end_turn(participant_list):
 
 def pop_dead_man(person_party, is_enemy):
     """Pops characters from their party list if they are defeated."""
-    for person in person_party:
+    for person in reversed(person_party):
         if person.cur_hp <= 0:
             person_party.pop(person_party.index(person))
             if person in burning_dictionary: # Removes person's name from burndict if in there

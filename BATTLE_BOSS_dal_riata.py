@@ -6,7 +6,7 @@ ally_party = [kiri, june, lachlan]
 ally_party_june_retreat_s3 = []
 enemy_party = [dal_riata]
 
-dal_riata_flavor_text_list = [
+flavor_text_list = [
     "Dullahan crackled loudly.",
     "The air turned bristly cold.",
     "Lachlan grew impatient.",
@@ -23,8 +23,8 @@ while ally_party != [] and enemy_party != []:
     # Turn start
     turn += 1; announce_new_turn(turn)
     # Flavor text
-    if turn <= 7: print(dal_riata_flavor_text_list[turn - 1])
-    else: print(dal_riata_flavor_text_list[-1])
+    if turn <= 7: print(flavor_text_list[turn - 1])
+    else: print(flavor_text_list[-1])
     # HP
     if turn == 7 and emily not in ally_party:
         ally_party.append(emily)
@@ -34,10 +34,10 @@ while ally_party != [] and enemy_party != []:
     participant_list = func_participant_list(ally_party, enemy_party)
     announce_hp_mp(participant_list)
 
-    # Special battle condition
+    # Special battle condition: Dullahan's DF becomes lowered after turn 7
     if turn >= 7:
         if turn == 7: print("Dullahan appeared to be exhausted...!")
-        dal_riata.df_mod *= 0.7
+        dal_riata.df_multi *= 0.7
 
     # Allies' turn
     if ally_party:
@@ -48,11 +48,12 @@ while ally_party != [] and enemy_party != []:
                 if enemy_party:
                     ally.action_choice(ally_party, enemy_party)
                     pop_dead_man(enemy_party, True)
-        else: ally.na(enemy_party)
+        else: ally.na(enemy_party); pop_dead_man(enemy_party, True)
+        print("")
     pop_dead_man(enemy_party, True)
 
-    # June's Skill 2 LV3 charge.
-    if june.red_dusk_s2_retreat:
+    # June's Skill 3 LV3 charge.
+    if june.red_dusk_s3_retreat:
         ally_party.pop(ally_party.index(june))
         ally_party_june_retreat_s3.append(june)
 
@@ -85,7 +86,7 @@ while ally_party != [] and enemy_party != []:
             else: dal_riata_s5_target = random.choice(ally_party)
             print(f"Dullahan is preparing an attack against {dal_riata_s5_target.name}...\n")
         if turn % 5 == 1 and turn != 1:
-            dal_riata.s5(ally_party, dal_riata_s5_target)
+            dal_riata.s5(ally_party, dal_riata_s5_target); print("")
         pop_dead_man(ally_party, False)
 
         if dal_riata.s5_follow_up:
@@ -101,7 +102,7 @@ while ally_party != [] and enemy_party != []:
     # June's Skill 3
     if ally_party_june_retreat_s3 == [june]:
         sleep(0.5)
-        june.s3(enemy_party)
+        june.s3_strike(enemy_party)
         ally_party_june_retreat_s3.pop(0)
         if kiri in ally_party: ally_party.insert(1, june)
         else: ally_party.insert(0, june)

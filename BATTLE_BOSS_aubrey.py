@@ -6,7 +6,7 @@ ally_party = [kiri, june]
 ally_party_june_retreat_s3 = []
 enemy_party = [aubrey]
 
-aubrey_flavor_text_list = [
+flavor_text_list = [
     "Almonds, garlics, rotten eggs.",
     "June looked visibly agitated.",
     "The room glowed a mysterious green.",
@@ -20,10 +20,10 @@ while ally_party != [] and enemy_party != []:
     # Turn start
     turn += 1; announce_new_turn(turn)
     # Flavor text
-    if turn <= 4: print(aubrey_flavor_text_list[turn - 1])
+    if turn <= 4: print(flavor_text_list[turn - 1])
     else:
-        if turn % 4 == 0: print(aubrey_flavor_text_list[3])
-        else: print(aubrey_flavor_text_list[-1])
+        if turn % 4 == 0: print(flavor_text_list[3])
+        else: print(flavor_text_list[-1])
     # HP
     participant_list = func_participant_list(ally_party, enemy_party)
     announce_hp_mp(participant_list)
@@ -37,11 +37,12 @@ while ally_party != [] and enemy_party != []:
                 if enemy_party:
                     ally.action_choice(ally_party, enemy_party)
                     pop_dead_man(enemy_party, True)
-        else: ally.na(enemy_party)
+        else: ally.na(enemy_party); pop_dead_man(enemy_party, True)
+        print("")
     pop_dead_man(enemy_party, True)
 
-    # June's Skill 2 LV3 charge.
-    if june.red_dusk_s2_retreat:
+    # June's Skill 3 LV3 charge.
+    if june.red_dusk_s3_retreat:
         ally_party.pop(ally_party.index(june))
         ally_party_june_retreat_s3.append(june)
 
@@ -64,12 +65,12 @@ while ally_party != [] and enemy_party != []:
                         sleep(0.5)
                     print("")
                 else: break
-        else: aubrey.s2(ally_party)
+        else: aubrey.s2(ally_party); print("")
 
     # June's Skill 3
     if ally_party_june_retreat_s3 == [june]:
         sleep(0.5)
-        june.s3(enemy_party)
+        june.s3_strike(enemy_party)
         ally_party_june_retreat_s3.pop(0)
         if kiri in ally_party: ally_party.insert(1, june)
         else: ally_party.insert(0, june)
