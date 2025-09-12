@@ -24,6 +24,7 @@ flavor_text_list = [
 turn = 0
 while ally_party != [] and enemy_party != []:
 
+    abno_wolf.dmg_multi = 0.5
     # Turn start
     turn += 1; announce_new_turn(turn)
     # Flavor text
@@ -36,7 +37,7 @@ while ally_party != [] and enemy_party != []:
 
     # Special battle condition: Lurking Beast's SPD and damage multipliers increase after reaching 60% HP.
     # At 30% HP, SPD increases even more; has a chance to reflect damage back to attackers.
-    if abno_wolf.stunned: abno_wolf.df_multi = 2
+    if abno_wolf.is_stunned > 0: abno_wolf.df_multi = 2
     else: abno_wolf.df_multi = 1.25
 
     if 0.3 * abno_wolf.max_hp < abno_wolf.cur_hp <= 0.6 * abno_wolf.max_hp:
@@ -54,14 +55,19 @@ while ally_party != [] and enemy_party != []:
     if ally_party:
         sleep(0.5); print("\n|| Your turn ||"); sleep(0.5)
     for ally in ally_party:
-        if ally.is_furious <= 0:
-            for speed in range(ally.spd):
-                if enemy_party:
-                    ally.action_choice(ally_party, enemy_party)
+        if enemy_party:
+            if ally.is_stunned <= 0:
+                if ally.is_furious <= 0:
+                    for speed in range(ally.spd):
+                        ally.action_choice(ally_party, enemy_party)
+                        pop_dead_man(enemy_party, True)
+                        print("")
+                else:
+                    ally.na(enemy_party)
                     pop_dead_man(enemy_party, True)
-        else: ally.na(enemy_party); pop_dead_man(enemy_party, True)
-        print("")
-    pop_dead_man(enemy_party, True)
+                    sleep(0.5); print("")
+            else: sleep(0.5); print(f"{ally.name} is Stunned!\n"); sleep(0.5)
+        else: break
 
     # June's Skill 3 LV3 charge.
     if june.red_dusk_s3_retreat:
@@ -72,27 +78,30 @@ while ally_party != [] and enemy_party != []:
     if enemy_party:
         sleep(0.5); print("\n|| Enemies' turn ||"); sleep(0.5)
     for enemy in enemy_party:
-        if not abno_wolf.stunned:
-            if turn % 6 == 0:
-                if not abno_wolf.buff: abno_wolf.s2(ally_party)
-                else: abno_wolf.s4(ally_party)
-                print("")
-            else:
-                for speed in range(enemy.spd):
-                    if ally_party:
-                        enemy.enemy_action_random_choice(ally_party, enemy_party)
+        if ally_party:
+            if enemy.is_stunned <= 0:
+                if turn % 6 == 0:
+                    if not abno_wolf.buff: abno_wolf.s2(ally_party)
+                    else: abno_wolf.s4(ally_party)
+                    print("")
+                else:
+                    if enemy.is_furious <= 0:
+                        for speed in range(enemy.spd):
+                            enemy.enemy_action_random_choice(ally_party, enemy_party)
+                            pop_dead_man(ally_party, False)
+                            # Kiri's Skill 2 counter.
+                            if kiri in ally_party and kiri.shield_hp < kiri.polaris_s2_shield_hp_detect_hit:
+                                # Detects if Kiri is still alive AND has taken shield_hp damage while it's enhanced.
+                                sleep(0.5)
+                                kiri.s2_counter(enemy)
+                                pop_dead_man(enemy_party, True)
+                            sleep(0.5); print("")
+                    else:
+                        enemy.na(ally_party)
                         pop_dead_man(ally_party, False)
-
-                        # Kiri's Skill 2 counter.
-                        if kiri in ally_party and kiri.shield_hp < kiri.polaris_s2_shield_hp_detect_hit:
-                            # Detects if Kiri is still alive AND has taken shield_hp damage while it's enhanced.
-                            sleep(0.5)
-                            kiri.s2_counter(enemy)
-                            pop_dead_man(enemy_party, True)
-                            sleep(0.5)
-                        print("")
-                    else: break
-        else: print("Lurking Beast is recovering from the impact...!\n"); abno_wolf.stunned = False
+                        sleep(0.5); print("")
+            else: print("Lurking Beast is recovering from the impact...!\n");
+        else: break
 
     # June's Skill 3
     if ally_party_june_retreat_s3 == [june]:

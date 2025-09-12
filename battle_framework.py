@@ -5,7 +5,7 @@ from characters_enemies_boss import *
 
 ally_party = [kiri, june, lachlan, emily]
 ally_party_june_retreat_s3 = []
-enemy_party = [dummy, goon1_1, goon1_2, goon2_1, goon2_2]
+enemy_party = [sanc_fixer_0_1, sanc_fixer_0_2, sanc_guard_a, sanc_guard_b]
 
 flavor_text_list = [
     "Let's get this over with.",
@@ -29,14 +29,19 @@ while ally_party != [] and enemy_party != []:
     if ally_party:
         sleep(0.5); print("\n|| Your turn ||"); sleep(0.5)
     for ally in ally_party:
-        if ally.is_furious <= 0:
-            for speed in range(ally.spd):
-                if enemy_party:
-                    ally.action_choice(ally_party, enemy_party)
+        if enemy_party:
+            if ally.is_stunned <= 0:
+                if ally.is_furious <= 0:
+                    for speed in range(ally.spd):
+                        ally.action_choice(ally_party, enemy_party)
+                        pop_dead_man(enemy_party, True)
+                        print("")
+                else:
+                    ally.na(enemy_party)
                     pop_dead_man(enemy_party, True)
-        else: ally.na(enemy_party); pop_dead_man(enemy_party, True)
-        print("")
-    pop_dead_man(enemy_party, True)
+                    sleep(0.5); print("")
+            else: sleep(0.5); print(f"{ally.name} is Stunned!\n"); sleep(0.5)
+        else: break
 
     # June's Skill 3 LV3 charge.
     if june.red_dusk_s3_retreat:
@@ -47,20 +52,25 @@ while ally_party != [] and enemy_party != []:
     if enemy_party:
         sleep(0.5); print("\n|| Enemies' turn ||"); sleep(0.5)
     for enemy in enemy_party:
-        for speed in range(enemy.spd):
-            if ally_party:
-                enemy.enemy_action_random_choice(ally_party, enemy_party)
-                pop_dead_man(ally_party, False)
-
-                # Kiri's Skill 2 counter.
-                if kiri in ally_party and kiri.shield_hp < kiri.polaris_s2_shield_hp_detect_hit:
-                    # Detects if Kiri is still alive AND has taken shield_hp damage while it's enhanced.
-                    sleep(0.5)
-                    kiri.s2_counter(enemy)
-                    pop_dead_man(enemy_party, True)
-                    sleep(0.5)
-                print("")
-            else: break
+        if ally_party:
+            if enemy.is_stunned <= 0:
+                if enemy.is_furious <= 0:
+                    for speed in range(enemy.spd):
+                        enemy.enemy_action_random_choice(ally_party, enemy_party)
+                        pop_dead_man(ally_party, False)
+                        # Kiri's Skill 2 counter.
+                        if kiri in ally_party and kiri.shield_hp < kiri.polaris_s2_shield_hp_detect_hit:
+                            # Detects if Kiri is still alive AND has taken shield_hp damage while it's enhanced.
+                            sleep(0.5)
+                            kiri.s2_counter(enemy)
+                            pop_dead_man(enemy_party, True)
+                        sleep(0.5); print("")
+                else:
+                    enemy.na(ally_party)
+                    pop_dead_man(ally_party, False)
+                    sleep(0.5); print("")
+            else: print(f"{enemy.name} is Stunned!\n")
+        else: break
 
     # June's Skill 3
     if ally_party_june_retreat_s3 == [june]:

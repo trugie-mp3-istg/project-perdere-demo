@@ -1,9 +1,9 @@
 2025.8.13:  First simple prototype using 3 stats: hp, atk, df, and other damage calculation mechanics.
-	    Completed a framework for ordinary attacks.
+            Completed a framework for ordinary attacks.
 2025.8.14:  Completed Heal, Bleed, and Burn mechanics. Further balancing was made.
 2025.8.15:  Completed S1 for all allies. Reorganized bits of code.
 2025.8.16:  Clean-up in code regarding parameter stats.
-	    Added some characters in csv file.
+            Added some characters in csv file.
 2025.8.17:  Developed a function to insert stats automatically by searching for a character's id_num
 instead of doing it manually.
 2025.8.18:  No contribution other than finalizing skill names externally.
@@ -18,21 +18,18 @@ are defeated.
 2025.8.22:  HP Announcing mechanic now announces HP's status effects as well.
             Developed an MP cost mechanic.
 2025.8.23:  Added new enemies.
-
-            There is currently too much repetition in codes despite varying very little from each other:
-codes with special gimmicks aside, most simply pick a random target, run attack, proc bleed, and print some text. The
-only differences are in texts printed and 2 parameters: count and mod.
-            Solution: create a separate function for target picking, and revise text printing instances to be
-independent of the attack function. Its count and mod are to be parameters.
-            Allies: -45 lines (including comment removal)
-
+            Create a separate function for target picking, and revise text printing instances to be independent of the
+attack function. Its count and mod are to be parameters. Noticeable decrease in code length is seen.
 2025.8.24:  Added new enemies and 3 new status effects: poison, blindness, and fury. Fixed allies' target selection
-function where it could only operate on greedily correct inputs and would crash otherwise.
-            Added Marcy.
+function where it could only operate on greedily correct inputs and would crash the program otherwise.
 2025.8.25:  Slightly buffed Dullahan's S4, and added a voiceline when triggering his extra attacks.
-2025.9.1:   Raised MP cost of June's S1, Lachlan's S3, and Emily's S2 by 1.
-            June's S3 now requires manual activation.
+2025.9.1:   Raised MP cost of June's S1, Lachlan's S3, and Emily's S2 by 1. June's S3 now requires manual activation.
             Old burn damage logic patched, which used to deal too much damage due to miscalculations.
 2025.9.2:   Lurking Beast's battle has been finished. Nerfed Lachlan's S3 healing efficiency from 50% to 40%.
             As June's S3 now requires an additional turn to use, most fights have been rebalanced around her nerf.
             Emily's S2 heal is now party-applicable, not just on herself.
+2025.9.4:   Added pauses after character skills and reorganized battle codes for readability.
+            Added 1 status effect: stun. By law of powerscaling, this is Dummy-upscale.
+            Reworked Kiri's kit to fit a more supportive debuff role.
+            Finished June's midboss fight.
+2025.9.7:   Added new enemies. Rewrote code for the Turn Start HP announcer.

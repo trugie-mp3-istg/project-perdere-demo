@@ -1,19 +1,32 @@
 tag,flavor_text
 test_dummy,- It looks kind of cute.
-test_goon,- Don't beat them up too badly.
-test_goon2,- Don't need to exert yourself here.
+perd_goon_1,- Don't beat them up too badly.
+perd_goon_2,- Won't need to exert yourself here.
 perd_midboss,"- She's either a lunatic, or really good at acting like one."
+june_mboss,- I need to GET OUT OF HERE...!
 perd_hunter,"- Can you guys, uh, put the crossbows down...?"
-aubrey,- Fights with poison. We ought not to waste our attacks against her.
+aubrey,- Fights with paralyzing poison. We ought not to waste our attacks against her.
 abno_wolf,"- Today, we hunt wolves."
+sanc_fixer_0,- Some random Fixer. I can take 'em.
+sanc_guard_a,"- Ordinary-looking, average-casing, hammer-wielding robot. "
+sanc_guard_b,"- Tough-looking, thick-casing, drill-wielding robot."
+castor,
+pollux,
+sanc_babelfixer,"- Lachlan's subordinates, likely."
+lachlan_mboss,"- Eyes on his blades, EYES ON HIS BLADES...!"
+sanc_fixer_1,"- A mobilized Fixer, specialized in offense."
+sanc_fixer_2,"- A mobilized Fixer, specialized in defense."
+sanc_fixer_3,"- A mobilized Fixer, specialized in support."
 dal_riata,"- The Azure Blade of Fate, the captain of The Fatality.
-- With his heavy defense, perhaps burn damage may wilt him down faster than normal attacks...?"
-abno_machine,- A grotesque pile of flesh trapped inside metal casings.
-priam,"- A mob boss with an army in his arsenal. Without them, he's nothing."
+- Controls the piercing cold. We need to keep our guards up."
 jessica_0,- ... It's her.
+abno_machine,- A grotesque pile of flesh trapped inside metal casings.
+emily_mboss,- THIS is why you called me here?!
+priam,"- A mob boss with an army in his arsenal. Without them, he's nothing."
+nest_babelfixer,- They must have joined after I left...
 jessica_9,- Marcy awaits me on the other side.
-kiri_9,- Stars are flickering.
 june_9,"- The damage dealer of the trio. She'll panic when one of them goes down, and..."
 lachlan_9,- The tank and healer of the trio. ... I will deal with him later.
 emily_9,- The mage of the trio. Get her first.
 marcy,"- I'd love to taste your tea again, but..."
+kiri_9,- Stars are flickering.

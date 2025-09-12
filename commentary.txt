@@ -1,24 +1,57 @@
+@ kiri, june, lachlan, emily.
+
+Kiri is not quite as formidable as his teammates combat-wise, focusing on debuffing enemies as a support role.
+Note: His S1, by description, "reduces the enemy's DF by 30%." But due to damage calculation, if an enemy has negative
+DF, it technically should increase it by 30% instead.
+
+June is the designated DPS and boss-killer. She has a S1 that deals good damage, a S2 that boosts her damage to cloud
+nine, and a long-winding S3 that deals guaranteed crazy damage as it ignores DF.
+
+Lachlan is the designated tank and healer, with his naturally high HP and direct attack resistance, and 2 healing
+skills. His S2 compensates for his lack of damage by sacrificing healing efficiency for greatly enhanced NA should he
+need to abandon healing. Since Lachlan's sole damage output comes from his multi-hit low-damaging NA, he will struggle
+quite ceremoniously against enemies with high DF.
+
+Emily is the designated support and mook-killer. Her S1 builds burn randomly among enemies, her S2 removes all negative
+status effects from an ally, and her S3 bombards enemies team-wide with just enough damage to cripple weak mooks. As
+long as they don't possess high burn resistance, she can chip down HP slowly but surely, regardless of DF.
+
+=================
+
 @ dummy.
-Dummy has 1 normal attack and 5 skills that inflict a debuff each.
+Dummy has 1 normal attack and 6 skills that inflict a different debuff each.
 Dummy is the strongest.
 
-@ goon1_1, goon2_1, goon1_2, goon2_2: Perdor goon variants.
-There truly is strength in number.
+
+@ perd_goon_1_1, perd_goon_1_2, perd_goon_2_1, perd_goon_2_2: Weak Perdor enemy variants.
+Though Kiri can't take on four people on his own. There truly is strength in number.
+
 
 @! perd_midboss. Kiri fights this woman alone in a simple fight where he can only NA or defend.
 If he defends from the midboss's big attack, he wins. Else, he loses.
 
-@ perd_hunter_1, perd_hunter_2: Perdor enemy variants with higher stats overall.
-Attacks are high-damaging but have a chance to miss.
 
-@!! aubrey. Kiri and June team up.
-The idea is to defend while stacking up on June's S2 charges until she can S3, since Aubrey's main damage output
-comes from Poison. Her direct hits are low-damaging, and she does not proc Bleed on her own.
-It's possible to beat her while brute-forcing through her Poison damage, but it's very risky.
+@! june_mboss. A brutal, one-sided assault which Kiri for some reason manages to run away from after turn 2.
+The real battle is actually against 2 perd_hunter and 4 perd_goon. Kiri gains passive healing and a damage buff, but
+"starts" the battle with low HP.
+Prioritize taking out the hunters first and foremost.
+The battle results in a scripted loss once Kiri defeats the 6 Perdor mooks.
+From this point forward, Kiri can use S2.
+
+
+@ perd_hunter_1, perd_hunter_2: Perdor enemy variants with higher stats overall.
+Attacks are high-damaging but have a chance to miss. First appearance technically from June's midboss battle.
+
+
+@!! aubrey. Kiri and June team up. Aubrey's main damage output is from Poison, dealing fixed damage when the enemy
+attacks.
+The idea is to defend when poisoned while stacking up on June's S2 charges until she can S3, taking little damage
+in the process. It's possible to beat her while brute-forcing through her Poison damage, but it's very risky.
 June cannot use S3 if Kiri is defeated, while without June, Kiri can only attack with NA.
 Takes a bit over 10 turns.
 
-@# abno_wolf.
+
+@# abno_wolf. Becomes more ferocious as its HP drops.
 Designed with the participation of all 4 members in mind, especially Kiri and his S2, which is key to stopping
 the big dash attack every 6 turns.
 Has 3 phases, starting at 100%, 60%, and 30% HP, respectively.
@@ -27,16 +60,35 @@ Has 3 phases, starting at 100%, 60%, and 30% HP, respectively.
 of spamming its Bleed attack, as well as proc'ing Bleed more frequently overall. Dash attack must be Kiri-S2'd or
 Defended against.
 3rd phase must be dealt with as quickly as possible, as its howl attack can and will throw off any strategy with
-its Bleed proc'ing and Furious status effect, preventing allies from defending or healing.
+Bleed proc'ing and Furious status effect, preventing allies from defending or healing.
+Spamming NA and Lachlan's S3 seems to work for some reason.
 Takes 20-25 turns to beat.
 
-@!! dal_riata. Kiri, June, and Lachlan team up initially.
-It's extremely hard to beat him without Emily's constant fire damage and MP generation, so Emily joins the battle on
-turn 7, after Dullahan uses his big attack the first time and becomes exhausted afterward.
-Dullahan uses a wide range of high-frequency skills that inflict and proc Bleed, requiring careful MP management
-between healing and attacking.
+
+@ sanc_fixer_0_1, sanc_fixer_0_2, sanc_fixer_0_3. A group of 3 generic Fixers in the Sanctuary, though there may be
+fewer.
+Kiri and June can beat 2 of them most of the time, and all 3 of them sometimes. The addition of Lachlan and Emily
+makes it easier.
+
+
+@ sanc_guard_a, sanc_guard_b. Robot enemies that suit better a support role, given that they're guards, not active
+combatants.
+Sanc Guard Model-A deals decent damage in one strike and may Stun enemies, but itself will temporarily shut down the
+turn after, giving the team a chance to retaliate.
+Sanc Guard Model-B deals low damage, but has heavy armor and can sustain itself with healing, as well as healing its
+allies.
+
+
+@!! dal_riata. Kiri, June, and Lachlan team up initially, with Emily joining from turn 8.
+Dullahan has high defense and uses a wide range of high-frequency skills that inflict and proc Bleed, requiring careful
+MP management between healing and attacking.
 Negligence of healing is punished with his big attack every 5 turns. If he successfully defeats an ally, he heals
 greatly and follows up with 2 random attacks, further devastating allies' formation.
 Takes roughly 20 turns.
+
+
+@!! priam. High defense, discouraging allies from attacking him directly, while summoning minions mid-fight which they
+have to clear.
+
 
 @ kiri / marcy. Formatted like a fight, but it's just a dialogue exchange in a final encounter post-Pacifist run.
