@@ -15,6 +15,7 @@ s2_count = stats.s2_count; s2_mod = stats.s2_mod
 s3_count = stats.s3_count; s3_mod = stats.s3_mod
 s4_count = stats.s4_count; s4_mod = stats.s4_mod
 s5_count = stats.s5_count; s5_mod = stats.s5_mod
+s6_count = stats.s6_count; s6_mod = stats.s6_mod
 
 pd_stats_column_list = [id_num, tag, name, lv,
                         hp, atk, df, spd,
@@ -23,8 +24,7 @@ pd_stats_column_list = [id_num, tag, name, lv,
                         s1_count, s1_mod,
                         s2_count, s2_mod,
                         s3_count, s3_mod,
-                        s4_count, s4_mod,
-                        s5_count, s5_mod]
+                        s4_count, s4_mod, s5_count, s5_mod, s6_count, s6_mod]
 
 def insert_stat_by_id_num(pd_stats_col_list, char_id_num, char_stats=None):
     """Automatically inserts a character's stats by their id_num.\n

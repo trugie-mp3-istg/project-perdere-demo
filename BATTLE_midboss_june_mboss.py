@@ -1,17 +1,16 @@
 from combat import *
 from characters_allies import *
+from characters_enemies import *
 from characters_enemies_boss import *
 
-ally_party = [kiri, june]
-ally_party_june_retreat_s3 = []
-enemy_party = [aubrey]
+ally_party = [kiri]
+enemy_party = [june_mboss]
+enemy_party_june_retreat = []
 
 flavor_text_list = [
-    "Almonds, garlics, rotten eggs.",
-    "June looked visibly agitated. Aubrey just smirked in response.",
-    "The room glowed a mysterious green. You aren't sure if it's the lighting or the air.",
-    "Aubrey readied her poison bomb.",
-    "Poison damages you if you attack! Try to deal as much damage as possible with each hit."
+    "The hunt begins.",
+    "But you haven't escaped the clutch of the Babel Hotel!",
+    "Here she comes."
 ]
 
 turn = 0
@@ -20,10 +19,32 @@ while ally_party != [] and enemy_party != []:
     # Turn start
     turn += 1; announce_new_turn(turn)
     # Flavor text
-    if turn <= 4: print(flavor_text_list[turn - 1])
+    if turn <= 2: print(flavor_text_list[0])
     else:
-        if turn % 4 == 0: print(flavor_text_list[3])
-        else: print(flavor_text_list[-1])
+        if not june_mboss.s2_ready: print(flavor_text_list[1])
+        else: print(flavor_text_list[2])
+    # Special battle condition: Kiri heals 10 HP every turn and gains a damage boost, starting from turn 2.
+    if turn > 1 and not june_mboss.s2_ready:
+        print(f"{kiri.name} took a hasty breather!")
+        kiri.heal(kiri, 10)
+        kiri.dmg_multi = 1.5
+    if turn == 3:
+        enemy_party.append(perd_hunter_1)
+        enemy_party.append(perd_goon_1_1)
+        enemy_party.pop(0)
+        enemy_party_june_retreat.append(june_mboss)
+    if turn == 6:
+        enemy_party.append(perd_hunter_2)
+        print(f"{perd_hunter_2.name} joined the hunt!")
+    if turn == 9:
+        enemy_party.append(perd_goon_1_2)
+        print(f"{perd_goon_1_2.name} joined the hunt!")
+    if turn == 11:
+        enemy_party.append(perd_goon_2_1)
+        print(f"{perd_goon_2_1.name} joined the hunt!")
+    if turn == 13:
+        enemy_party.append(perd_goon_2_2)
+        print(f"{perd_goon_2_2.name} joined the hunt!")
     # HP
     participant_list = func_participant_list(ally_party, enemy_party)
     announce_hp_mp(participant_list)
@@ -46,18 +67,13 @@ while ally_party != [] and enemy_party != []:
             else: sleep(0.5); print(f"{ally.name} is Stunned!\n"); sleep(0.5)
         else: break
 
-    # June's Skill 3 LV3 charge.
-    if june.red_dusk_s3_retreat:
-        ally_party.pop(ally_party.index(june))
-        ally_party_june_retreat_s3.append(june)
-
     # Enemies' turn
     if enemy_party:
         sleep(0.5); print("\n|| Enemies' turn ||"); sleep(0.5)
     for enemy in enemy_party:
         if ally_party:
-            if enemy.is_stunned <= 0:
-                if turn % 4 != 0:
+            if not june_mboss.s2_ready:
+                if enemy.is_stunned <= 0:
                     if enemy.is_furious <= 0:
                         for speed in range(enemy.spd):
                             enemy.enemy_action_random_choice(ally_party, enemy_party)
@@ -73,18 +89,18 @@ while ally_party != [] and enemy_party != []:
                         enemy.na(ally_party)
                         pop_dead_man(ally_party, False)
                         sleep(0.5); print("")
-                else: aubrey.s2(ally_party); print("")
-            else: print(f"{enemy.name} is Stunned!\n")
+                else: print(f"{enemy.name} is Stunned!\n")
+            else: june_mboss.s2(kiri)
         else: break
 
-    # June's Skill 3
-    if ally_party_june_retreat_s3 == [june]:
-        sleep(0.5)
-        june.s3_strike(enemy_party)
-        ally_party_june_retreat_s3.pop(0)
-        if kiri in ally_party: ally_party.insert(1, june)
-        else: ally_party.insert(0, june)
-        pop_dead_man(enemy_party, True)
+    if turn == 2: print("Kiri managed to get away... for now!")
+
+    if not enemy_party and enemy_party_june_retreat == [june_mboss]:
+        enemy_party.append(june_mboss)
+        enemy_party_june_retreat.pop(0)
+        sleep(1)
+        print("... But June has already caught up long ago!")
+        june_mboss.s2_ready = True
 
     # Turn end
     sleep(0.5)
@@ -92,8 +108,9 @@ while ally_party != [] and enemy_party != []:
     pop_dead_man(ally_party, False)
     pop_dead_man(enemy_party, True)
 
-
 if not enemy_party:
     print("\n-----------------------\n#-#-#-# Victory #-#-#-#\n-----------------------"); exit(0)
 elif not ally_party:
-    print("\n.-- .... . .-. .\n.- .-. .\n-.-- --- ..- ..--.."); exit(0)
+    if june_mboss.s2_ready:
+        print("\n--------------------------\n#-#-#-# Defeat...? #-#-#-#\n--------------------------"); exit(0)
+    else: print("\n.-- .... . .-. .\n.- .-. .\n-.-- --- ..- ..--.."); exit(0)

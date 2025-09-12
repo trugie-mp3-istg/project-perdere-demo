@@ -39,10 +39,11 @@ class Kiri(Character):
 
     def na(self, enemy_party):
         """Attacks an enemy once.\n
-        Spends Stella Polaris to inflict Bleed and Burn this turn."""
+        Spends Stella Polaris to deal more damage and inflict Bleed and Burn this turn."""
         target = self.select_target_from_enemy_party(enemy_party)
         print(f"{self.name} attacked {target.name}!")
-        self.func_attack(target, self.na_count, self.na_mod)
+        if self.polaris: self.func_attack(target, self.na_count, self.na_mod + 0.5)
+        else: self.func_attack(target, self.na_count, self.na_mod)
 
         # Stella Polaris' effect.
         if self.polaris:
@@ -56,23 +57,18 @@ class Kiri(Character):
             self.polaris = False
 
     def s1(self, enemy_party):
-        """Inspects an enemy.\n
-        Spends Stella Polaris to daze the enemy;
-        for 1 next turn, the enemy takes +15% damage from all direct attacks."""
+        """Inspects an enemy. For this turn, reduces the enemy's ATK by 30%."""
         target = self.select_target_from_enemy_party(enemy_party)
         gaze_flavor_text_master = pandas.read_csv("gaze_flavor_text.csv")
         gaze_flavor_text = (gaze_flavor_text_master.loc[gaze_flavor_text_master["tag"] == target.tag, "flavor_text"]
         .values[0])
         print(f"Kiri gazed at {target.name}!")
-        print(f"- {target.name} - {target.atk} AT {target.df} DF")
+        print(f"- {target.name} - {target.atk} ATK {target.df} DF")
         print(gaze_flavor_text)
 
-        # Stella Polaris' effect.
-        if self.polaris:
-            target.df_multi *= 0.7
-            print("Kiri consumed Stella Polaris!")
-            print(f"{target.name} was dazed and will take more damage!")
-            self.polaris = False
+        # Weakens enemies' ATK
+        target.dmg_multi *= 0.7
+        print(f"{target.name} was analyzed! ATK down!")
 
     def s2(self):
         """Casts a shield and gains bonus Shield HP this turn and 1 next turn. Counts as a Defend this turn.\n
@@ -98,13 +94,18 @@ class Kiri(Character):
         self.polaris = False
 
     def s3(self, enemy_party):
-        """Attacks an enemy twice. Kiri gains Stella Polaris."""
+        """Attacks an enemy twice. Kiri gains Stella Polaris. For this turn, reduces the enemy's DF by 30%."""
         target = self.select_target_from_enemy_party(enemy_party)
         print(f"{self.name} took aim at {target.name}!")
         self.func_attack(target, self.s3_count, self.s3_mod)
         if not self.polaris:
             self.polaris = True
             print("Kiri gained Stella Polaris!")
+
+        # Weakens enemies' DF
+        if target.df > 0: target.df_multi *= 0.7
+        elif target.df <= 0: target.df_multi /= 0.7
+        print(f"{target.name} will take more damage this turn!")
 
     def defend(self):
         super().defend()
@@ -396,6 +397,10 @@ class Emily(Character):
                 cheer_target.is_furious = 0
                 if cheer_target == self: print("Emily calmed down!")
                 else: print(f"Emily calmed {cheer_target.name} down!")
+            if cheer_target.is_stunned > 0:
+                cheer_target.is_stunned = 0
+                if cheer_target == self: print("Emily magically recovered from being stunned!")
+                else: print(f"Emily forced {cheer_target.name} to keep fighting!")
             self.heal(cheer_target, 15)
             cheer_target.amber_moth = 2
             print(f"{cheer_target.name} felt encouraged! ATK up next turn!")

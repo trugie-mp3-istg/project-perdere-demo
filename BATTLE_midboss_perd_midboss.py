@@ -28,29 +28,46 @@ while ally_party != [] and enemy_party != []:
     if ally_party:
         sleep(0.5); print("\n|| Your turn ||"); sleep(0.5)
     for ally in ally_party:
-        if ally.is_furious <= 0:
-            for speed in range(ally.spd):
-                if enemy_party:
-                    ally.action_choice(ally_party, enemy_party)
+        if enemy_party:
+            if ally.is_stunned <= 0:
+                if ally.is_furious <= 0:
+                    for speed in range(ally.spd):
+                        ally.action_choice(ally_party, enemy_party)
+                        pop_dead_man(enemy_party, True)
+                        print("")
+                else:
+                    ally.na(enemy_party)
                     pop_dead_man(enemy_party, True)
-        else: ally.na(enemy_party); pop_dead_man(enemy_party, True)
-        print("")
-    pop_dead_man(enemy_party, True)
+                    sleep(0.5); print("")
+            else: sleep(0.5); print(f"{ally.name} is Stunned!\n"); sleep(0.5)
+        else: break
 
     # Enemies' turn
     if enemy_party:
         sleep(0.5); print("\n|| Enemies' turn ||"); sleep(0.5)
     for enemy in enemy_party:
-        if turn != 3:
-            for speed in range(enemy.spd):
-                if ally_party:
-                    enemy.enemy_action_random_choice(ally_party, enemy_party)
-                    pop_dead_man(ally_party, False)
-                    print("")
-                else: break
-        else: perd_midboss.s2(ally_party); pop_dead_man(ally_party, False)
-        if turn == 2:
-            print("💬 Hey, take this seriously! Do you want to bid your head farewell?!\n")
+        if ally_party:
+            if enemy.is_stunned <= 0:
+                if turn != 3:
+                    if enemy.is_furious <= 0:
+                        for speed in range(enemy.spd):
+                            enemy.enemy_action_random_choice(ally_party, enemy_party)
+                            pop_dead_man(ally_party, False)
+                            # Kiri's Skill 2 counter.
+                            if kiri in ally_party and kiri.shield_hp < kiri.polaris_s2_shield_hp_detect_hit:
+                                # Detects if Kiri is still alive AND has taken shield_hp damage while it's enhanced.
+                                sleep(0.5)
+                                kiri.s2_counter(enemy)
+                                pop_dead_man(enemy_party, True)
+                            sleep(0.5); print("")
+                    else:
+                        enemy.na(ally_party)
+                        pop_dead_man(ally_party, False)
+                        sleep(0.5); print("")
+                else: perd_midboss.s2(ally_party); pop_dead_man(ally_party, False)
+            else: print(f"{enemy.name} is Stunned!\n")
+        else: break
+        if turn == 2: print("💬 Take this seriously! Do you want to bid your head farewell?!\n")
 
     # Turn end
     sleep(0.5)

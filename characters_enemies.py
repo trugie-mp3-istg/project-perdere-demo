@@ -7,7 +7,7 @@ class Dummy(Character):
         super().__init__(*dummy_pd_stats)
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
-        available_actions = [0, 1, 2, 3, 4, 5]
+        available_actions = [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 5, 6]
         choice = random.choice(available_actions)
         if choice == 0: self.na(ally_party)
         elif choice == 1: self.s1(ally_party)
@@ -15,12 +15,14 @@ class Dummy(Character):
         elif choice == 3: self.s3(ally_party)
         elif choice == 4: self.s4(ally_party)
         elif choice == 5: self.s5(ally_party)
+        elif choice == 6: self.s6(ally_party)
 
     def na(self, ally_party):
         """Barely attacks an enemy once."""
         target = random.choice(ally_party)
         print(f"{self.name} bounced back at {target.name}!")
         self.func_attack(target, self.na_count, self.na_mod)
+        self.heal(self, 5)
 
     def s1(self, ally_party):
         """Barely attacks an enemy once, inflicting Bleed this turn and 1 next turn."""
@@ -66,70 +68,68 @@ class Dummy(Character):
             if target.is_furious <= 2: target.is_furious = 2
             print(f"{target.name} is furious!")
 
+    def s6(self, ally_party):
+        """Barely attacks an enemy twice. Has a chance to inflict Furious 1 next turn."""
+        target = random.choice(ally_party)
+        print(f"{self.name} smacked {target.name} with a pillow!")
+        self.func_attack(target, self.s6_count, self.s6_mod)
+        if random.random() < 0.5:
+            if target.is_stunned <= 2: target.is_stunned = 2
+            print(f"{target.name} is stunned!")
 dummy_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 9, dummy_pd_stats)
 dummy = Dummy()
 
-class Goon(Character):
+class PerdGoon1(Character):
     def __init__(self):
-        super().__init__(*goon_pd_stats)
+        super().__init__(*perd_goon_1_pd_stats)
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
-        available_actions = [0, 1]
+        available_actions = [0]
         choice = random.choice(available_actions)
         if choice == 0: self.na(ally_party)
-        if choice == 1: self.s1(ally_party)
 
     def na(self, ally_party):
         """Attacks an enemy once."""
         target = random.choice(ally_party)
+        random_count_mod_list = [[self.na_count, self.na_mod],
+                                 [self.s1_count, self.s1_mod]]
+        random_count_mod = random.choice(random_count_mod_list)
         print(f"{self.name} attacked {target.name}!")
-        self.func_attack(target, self.na_count, self.na_mod)
+        self.func_attack(target, *random_count_mod)
+perd_goon_1_pd_stats = []
+insert_stat_by_id_num(pd_stats_column_list, 100, perd_goon_1_pd_stats)
+perd_goon_1_1 = PerdGoon1()
+perd_goon_1_2 = PerdGoon1()
 
-    def s1(self, ally_party):
-        """Attacks an enemy once."""
-        target = random.choice(ally_party)
-        print(f"{self.name} attacked {target.name}!")
-        self.func_attack(target, self.s1_count, self.s1_mod)
-
-goon_pd_stats = []
-insert_stat_by_id_num(pd_stats_column_list, 100, goon_pd_stats)
-goon1_1 = Goon()
-goon1_2 = Goon()
-
-class Goon2(Character):
+class PerdGoon2(Character):
     def __init__(self):
-        super().__init__(*goon2_pd_stats)
+        super().__init__(*perd_goon_2_pd_stats)
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
-        available_actions = [0, 1]
+        available_actions = [0]
         choice = random.choice(available_actions)
         if choice == 0: self.na(ally_party)
-        if choice == 1: self.s1(ally_party)
 
     def na(self, ally_party):
-        """Attacks an enemy once."""
+        """Attacks an enemy once or twice."""
         target = random.choice(ally_party)
+        random_count_mod_list = [[self.na_count, self.na_mod],
+                                 [self.s1_count, self.s1_mod]]
+        random_count_mod = random.choice(random_count_mod_list)
         print(f"{self.name} attacked {target.name}!")
-        self.func_attack(target, self.na_count, self.na_mod)
-
-    def s1(self, ally_party):
-        """Attacks an enemy twice."""
-        target = random.choice(ally_party)
-        print(f"{self.name} attacked {target.name}!")
-        self.func_attack(target, self.s1_count, self.s1_mod)
-
-goon2_pd_stats = []
-insert_stat_by_id_num(pd_stats_column_list, 101, goon2_pd_stats)
-goon2_1 = Goon2()
-goon2_2 = Goon2()
+        self.func_attack(target, *random_count_mod)
+perd_goon_2_pd_stats = []
+insert_stat_by_id_num(pd_stats_column_list, 101, perd_goon_2_pd_stats)
+perd_goon_2_1 = PerdGoon2()
+perd_goon_2_2 = PerdGoon2()
 
 class PerdHunter(Character):
     def __init__(self):
         super().__init__(*perd_hunter_pd_stats)
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
-        available_actions = [0, 1]
+        available_actions = [0, 0, 1]
         choice = random.choice(available_actions)
         if choice == 0: self.na(ally_party)
         if choice == 1: self.s1(ally_party)
@@ -155,11 +155,106 @@ class PerdHunter(Character):
             target.is_bleeding += 1
             Character.do_bleed_damage(self, target)
             if target.is_bleeding > 0: print(f"{target.name} is bleeding!")
-
 perd_hunter_pd_stats = []
-insert_stat_by_id_num(pd_stats_column_list, 103, perd_hunter_pd_stats)
+insert_stat_by_id_num(pd_stats_column_list, 102, perd_hunter_pd_stats)
 perd_hunter_1 = PerdHunter()
 perd_hunter_2 = PerdHunter()
+
+class SancFixer0(Character):
+    def __init__(self):
+        super().__init__(*sanc_fixer_pd_stats)
+
+    def enemy_action_random_choice(self, ally_party, enemy_party):
+        available_actions = [0, 1]
+        choice = random.choice(available_actions)
+        if choice == 0: self.na(ally_party)
+        if choice == 1: self.s1(ally_party)
+
+    def na(self, ally_party):
+        """Attacks an enemy once."""
+        target = random.choice(ally_party)
+        print(f"{self.name} attacked {target.name}!")
+        self.func_attack(target, self.na_count, self.na_mod)
+
+    def s1(self, ally_party):
+        """Attacks an enemy twice. Has a chance to inflict Bleed this turn and 1 next turn."""
+        target = random.choice(ally_party)
+        print(f"{self.name} attacked {target.name}!")
+        self.func_attack(target, self.s1_count, self.s1_mod)
+        if random.random() < 0.5:
+            if target.is_bleeding < 2: target.is_bleeding = 2
+            Character.do_bleed_damage(self, target)
+            if target.is_bleeding > 0: print(f"{target.name} is bleeding!")
+sanc_fixer_pd_stats = []
+insert_stat_by_id_num(pd_stats_column_list, 200, sanc_fixer_pd_stats)
+sanc_fixer_0_1 = SancFixer0()
+sanc_fixer_0_2 = SancFixer0()
+sanc_fixer_0_3 = SancFixer0()
+
+class SancGuardA(Character):
+    def __init__(self):
+        super().__init__(*sanc_guard_a_pd_stats)
+
+    def enemy_action_random_choice(self, ally_party, enemy_party):
+        available_actions = [0, 0, 1]
+        choice = random.choice(available_actions)
+        if choice == 0: self.na(ally_party)
+        if choice == 1: self.s1(ally_party)
+
+    def na(self, ally_party):
+        """Attacks an enemy once."""
+        target = random.choice(ally_party)
+        print(f"{self.name} attacked {target.name}!")
+        self.func_attack(target, self.na_count, self.na_mod)
+
+    def s1(self, ally_party):
+        """Attacks an enemy once. Has a chance to inflict Stun. Becomes Stunned next turn."""
+        target = random.choice(ally_party)
+        print(f"{self.name} attacked {target.name} with its hammer!")
+        self.func_attack(target, self.s1_count, self.s1_mod)
+        if random.random() < 0.5:
+            if target.is_stunned < 2: target.is_stunned = 2
+            print(f"{target.name} was stunned from the impact!")
+        self.is_stunned = 2
+        print(f"{self.name} is temporarily paralyzed!")
+sanc_guard_a_pd_stats = []
+insert_stat_by_id_num(pd_stats_column_list, 201, sanc_guard_a_pd_stats)
+sanc_guard_a = SancGuardA()
+
+class SancGuardB(Character):
+    def __init__(self):
+        super().__init__(*sanc_guard_b_pd_stats)
+
+    def enemy_action_random_choice(self, ally_party, enemy_party):
+        available_actions = [0, 0, 1]
+        choice = random.choice(available_actions)
+        if choice == 0: self.na(ally_party)
+        if choice == 1: self.s1(ally_party, enemy_party)
+
+    def na(self, ally_party):
+        """Attacks an enemy twice."""
+        target = random.choice(ally_party)
+        print(f"{self.name} attacked {target.name}!")
+        self.func_attack(target, self.na_count, self.na_mod)
+
+    def s1(self, ally_party, enemy_party):
+        """Attacks an enemy thrice. Heals by damage dealt and inflicts Bleed this turn and 1 next turn.
+        Has a chance to share healing to a random ally."""
+        target = random.choice(ally_party)
+        print(f"{self.name} attacked {target.name} with its drill!")
+        for count in range(self.s1_count):
+            damage, bleed_damage = self.calculate_damage(target, self.s1_mod)
+            print(f"{damage} DMG")
+            if bleed_damage > 0:
+                target.cur_hp -= bleed_damage
+                print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
+            self.heal(self, damage)
+            if random.random() < 0.25:
+                heal_choice = [x for x in enemy_party if x != self] # It doesn't heal itself.
+                self.heal(random.choice(heal_choice), damage)
+sanc_guard_b_pd_stats = []
+insert_stat_by_id_num(pd_stats_column_list, 202, sanc_guard_b_pd_stats)
+sanc_guard_b = SancGuardB()
 
 class Marcy(Character):
     def __init__(self):
@@ -186,7 +281,6 @@ class Marcy(Character):
         print("The sun shone brightly through her cloud-white hair.")
         for count in range(self.s2_count):
             self.heal(target, self.s2_mod)
-
 marcy_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 744, marcy_pd_stats)
 marcy = Marcy()

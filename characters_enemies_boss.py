@@ -9,16 +9,15 @@ class PerdMidboss(Character):
         super().__init__(*perd_midboss_pd_stats)
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
-        available_actions = [0, 1]
+        available_actions = [0, 0, 1]
         choice = random.choice(available_actions)
         if choice == 0: self.na(ally_party)
         if choice == 1: self.s1(ally_party)
-        if choice == 2: self.s2(ally_party)
 
     def na(self, ally_party):
         """Attacks an enemy once."""
         target = random.choice(ally_party)
-        print(f"{self.name} attacked {target.name}!")
+        print(f"{self.name} charged at {target.name} with her knife!")
         self.func_attack(target, self.na_count, self.na_mod)
 
     def s1(self, ally_party):
@@ -49,10 +48,47 @@ class PerdMidboss(Character):
             sleep(0.5)
             print(f"{self.name} became demoralized! DF down!")
             self.df -= 10
-
 perd_midboss_pd_stats = []
-insert_stat_by_id_num(pd_stats_column_list, 102, perd_midboss_pd_stats)
+insert_stat_by_id_num(pd_stats_column_list, 110, perd_midboss_pd_stats)
 perd_midboss = PerdMidboss()
+
+class JuneMboss(Character):
+    def __init__(self):
+        super().__init__(*june_mboss_stats)
+        self.s2_ready = False
+
+    def enemy_action_random_choice(self, ally_party, enemy_party):
+        available_actions = [0, 1]
+        choice = random.choice(available_actions)
+        if choice == 0: self.na(ally_party)
+        if choice == 1: self.s1(ally_party)
+
+    def na(self, ally_party):
+        """Attacks an enemy twice."""
+        target = random.choice(ally_party)
+        print("June attacked!")
+        self.func_attack(target, self.na_count, self.na_mod)
+
+    def s1(self, ally_party):
+        """Attacks an enemy thrice."""
+        target = random.choice(ally_party)
+        print("June attacked!")
+        self.func_attack(target, self.s1_count, self.s1_mod)
+
+    def s2(self, target):
+        """Attacks an enemy once, ignoring defense."""
+        print(f"June used ✦Red Dusk✦ and is charging at {target.name} with immense speed...!"); sleep(0.5)
+        print(f"..."); sleep(0.5)
+        print(f"...!"); sleep(0.5)
+        for count in range(self.s2_count):
+            damage, bleed_damage = self.calculate_true_damage(target, self.s2_mod)
+            print(f"{damage} DMG")
+            if bleed_damage > 0:
+                target.cur_hp -= bleed_damage
+                print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
+june_mboss_stats = []
+insert_stat_by_id_num(pd_stats_column_list, 111, june_mboss_stats)
+june_mboss = JuneMboss()
 
 class Aubrey(Character):
     def __init__(self):
@@ -68,7 +104,7 @@ class Aubrey(Character):
     def na(self, ally_party):
         """Attacks an enemy once."""
         target = random.choice(ally_party)
-        print(f"{self.name} attacked {target.name}!")
+        print(f"{self.name} kicked {target.name}!")
         self.func_attack(target, self.na_count, self.na_mod)
 
     def s1(self, ally_party):
@@ -88,7 +124,6 @@ class Aubrey(Character):
             self.func_attack(target, self.s2_count, self.s2_mod)
             if target.is_poisoned <= 3: target.is_poisoned = 3
             print(f"{target.name} is poisoned!")
-
 aubrey_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 190, aubrey_pd_stats)
 aubrey = Aubrey()
@@ -96,9 +131,7 @@ aubrey = Aubrey()
 class AbnoWolf(Character):
     def __init__(self):
         super().__init__(*abno_wolf_pd_stats)
-        self.dmg_multi = 0.5
         self.buff = False
-        self.stunned = False
 
     def enemy_action_random_choice(self, ally_party, enemy_party):
         available_actions = [0, 1, 3]
@@ -157,10 +190,9 @@ class AbnoWolf(Character):
                 print(f"... and crashed into {target.name}'s shield!")
                 self.func_attack(target, self.s4_count, self.s4_mod / 2)
                 target.shield_hp = 0
-                self.stunned = True
+                self.is_stunned = 2
                 print(f"{target.name}'s shield broke! {self.name} is stunned for 1 next turn!")
                 break
-
 abno_wolf_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 901, abno_wolf_pd_stats)
 abno_wolf = AbnoWolf()
@@ -247,7 +279,6 @@ class DalRiata(Character):
         self.heal(self, 100)
         if target.cur_hp <= 0 and ally_party != []:
             self.s5_follow_up = True
-
 dal_riata_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 290, dal_riata_pd_stats)
 dal_riata = DalRiata()

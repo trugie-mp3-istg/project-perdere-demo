@@ -7,7 +7,7 @@ class Character:
                  direct_res, bleed_res, burn_res,
                  na_count, na_mod, s1_count, s1_mod,
                  s2_count, s2_mod, s3_count, s3_mod,
-                 s4_count, s4_mod, s5_count, s5_mod):
+                 s4_count, s4_mod, s5_count, s5_mod, s6_count, s6_mod):
         # Identification tag and displayed name:
         self.tag = tag; self.name = name
 
@@ -24,7 +24,8 @@ class Character:
 
         # Status effect attributes:
         self.is_bleeding = 0; self.is_burning = 0
-        self.is_poisoned = 0; self.is_blind = 0; self.is_furious = 0
+        self.is_poisoned = 0
+        self.is_blind = 0; self.is_furious = 0; self.is_stunned = 0
 
         # Attacks and skills' attributes:
         self.na_count = int(na_count); self.na_mod = na_mod
@@ -33,6 +34,7 @@ class Character:
         self.s3_count = int(s3_count); self.s3_mod = s3_mod
         self.s4_count = int(s4_count); self.s4_mod = s4_mod
         self.s5_count = int(s5_count); self.s5_mod = s5_mod
+        self.s6_count = int(s6_count); self.s6_mod = s6_mod
 
         # Miscellaneous attributes:
         self.dmg_multi = 1; self.heal_multi = 1; self.df_multi = 1
@@ -47,8 +49,8 @@ class Character:
     def calculate_damage(self, target, mod):
         """Calculates attacks. Used for normal attacks and skills."""
         deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
-        base_dmg = self.atk * mod
-        """How much a hit hurts on paper, not including enemies' DEF, resistances, and damage deviation."""
+        base_dmg = self.atk * mod       # How much a hit hurts on paper, not including enemies' DEF, resistances,
+                                        # and damage deviation.
         lv_diff = self.compare_lv(target)
 
         damage = int(round((base_dmg - target.df / 2 * target.df_multi) * lv_diff * deviation) * target.direct_res * self.dmg_multi)
@@ -127,6 +129,20 @@ class Character:
                     print(f"{self.name}'s attack was reflected back to sender!")
                     print(f"{damage_reflected} DMG ⊻")
 
+    def func_attack_fixed_damage(self, target, count, fdamage):
+        """Like func_attack, but deals fixed damage. Is a special effect on its own, so does not trigger
+        Bleed, Poison, or damage reflection."""
+        for count in range(count):
+            if target.shield_hp > 0:
+                if target.shield_hp >= fdamage:
+                    target.shield_hp -= fdamage
+                else:
+                    damage_left = fdamage - target.shield_hp
+                    target.shield_hp -= fdamage - damage_left
+                    print(f"{target.name}'s shield broke!")
+                    target.cur_hp -= damage_left
+            else: target.cur_hp -= fdamage
+
     def do_bleed_damage(self, inflicted):
         """Calculates bleed damage every time the enemy is hit with a direct attack."""
         deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
@@ -182,6 +198,7 @@ burning_dictionary = {} # Stores every burn damage instance in a dictionary to b
 def func_participant_list(ally_party, enemy_party):
     participant_list = []
     for ally in ally_party: participant_list.append(ally)
+    participant_list.append(-1)
     for enemy in enemy_party: participant_list.append(enemy)
     return participant_list
 
@@ -195,71 +212,53 @@ def announce_hp_mp(participant_list=None):
     if participant_list is None:
         participant_list = []
     for person in participant_list:
-        if person.shield_hp <= 0:
-            if person.is_bleeding > 0 >= person.is_burning >= person.is_poisoned:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🩸")
-            elif person.is_burning > 0 >= person.is_bleeding >= person.is_poisoned:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🔥")
-            elif person.is_poisoned > 0 >= person.is_bleeding >= person.is_burning:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🧪")
-            elif person.is_bleeding > 0 and person.is_burning > 0 and person.is_poisoned <= 0:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🩸 🔥")
-            elif person.is_bleeding > 0 and person.is_burning <= 0 and person.is_poisoned > 0:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🩸 🧪")
-            elif person.is_bleeding <= 0 and person.is_burning > 0 and person.is_poisoned > 0:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🔥 🧪")
-            elif person.is_bleeding > 0 and person.is_burning > 0 and person.is_poisoned > 0:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} 🩸 🔥 🧪")
-            else: print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp}")
+        if person != -1:
+            shield_hp_yes = ""; bleeding_yes = ""; burning_yes = ""; poisoned_yes = ""
+            if person.shield_hp > 0: shield_hp_yes = f"({person.shield_hp}) "
+            if person.is_bleeding > 0: bleeding_yes = "🩸 "
+            if person.is_burning > 0: burning_yes = "🔥 "
+            if person.is_poisoned > 0: poisoned_yes = "🧪 "
+            print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} {shield_hp_yes}{bleeding_yes}{burning_yes}{poisoned_yes}")
+            if person.is_stunned <= 0:
+                if person.is_blind > 0: print(f"{person.name} is Blinded! Target randomized!")
+                if person.is_furious > 0: print(f"{person.name} is Furious and will automatically Attack the first enemy!")
+            else: print(f"{person.name} is Stunned! Cannot act!")
         else:
-            if person.is_bleeding > 0 >= person.is_burning >= person.is_poisoned:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🩸")
-            elif person.is_burning > 0 >= person.is_bleeding >= person.is_poisoned:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🔥")
-            elif person.is_poisoned > 0 >= person.is_bleeding >= person.is_burning:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🧪")
-            elif person.is_bleeding > 0 and person.is_burning > 0 and person.is_poisoned <= 0:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🩸 🔥")
-            elif person.is_bleeding > 0 and person.is_burning <= 0 and person.is_poisoned > 0:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🩸 🧪")
-            elif person.is_bleeding <= 0 and person.is_burning > 0 and person.is_poisoned > 0:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🔥 🧪")
-            elif person.is_bleeding > 0 and person.is_burning > 0 and person.is_poisoned > 0:
-                print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp}) 🩸 🔥 🧪")
-            else: print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} ({person.shield_hp})")
-        if person.is_blind > 0:
-            print(f"{person.name} is Blinded! Target randomized!")
-        if person.is_furious > 0:
-            print(f"{person.name} is Furious and will automatically Attack their first enemy!")
-    # MP
-    print(f"★ MP: {ally_mp_gauge}/10")
+            # MP
+            print(f"★ MP: {ally_mp_gauge}/10")
+            print("---- ---- ---- ----")
 
 def end_turn(participant_list):
     """Performs janitory works, such as cleaning up status effects and burning down vermin."""
 
     # Refreshes (or reduces) temporary variables.
     for i in range(len(participant_list)):
-        participant_list[i].df_multi = 1
+        if participant_list[i] != -1:
+            participant_list[i].dmg_multi = 1
+            participant_list[i].df_multi = 1
 
-        participant_list[i].shield_duration -= 1
-        if participant_list[i].shield_duration <= 0:
-            participant_list[i].shield_duration = 0
-            participant_list[i].shield_hp = 0
+            participant_list[i].shield_duration -= 1
+            if participant_list[i].shield_duration <= 0:
+                participant_list[i].shield_duration = 0
+                participant_list[i].shield_hp = 0
 
-        participant_list[i].is_bleeding -= 1
-        if participant_list[i].is_bleeding < 0: participant_list[i].is_bleeding = 0
+            participant_list[i].is_bleeding -= 1
+            if participant_list[i].is_bleeding < 0: participant_list[i].is_bleeding = 0
 
-        participant_list[i].is_burning -= 1
-        if participant_list[i].is_burning < 0: participant_list[i].is_burning = 0
+            participant_list[i].is_burning -= 1
+            if participant_list[i].is_burning < 0: participant_list[i].is_burning = 0
 
-        participant_list[i].is_poisoned -= 1
-        if participant_list[i].is_poisoned < 0: participant_list[i].is_poisoned = 0
+            participant_list[i].is_poisoned -= 1
+            if participant_list[i].is_poisoned < 0: participant_list[i].is_poisoned = 0
 
-        participant_list[i].is_blind -= 1
-        if participant_list[i].is_blind < 0: participant_list[i].is_blind = 0
+            participant_list[i].is_blind -= 1
+            if participant_list[i].is_blind < 0: participant_list[i].is_blind = 0
 
-        participant_list[i].is_furious -= 1
-        if participant_list[i].is_furious < 0: participant_list[i].is_furious = 0
+            participant_list[i].is_furious -= 1
+            if participant_list[i].is_furious < 0: participant_list[i].is_furious = 0
+
+            participant_list[i].is_stunned -= 1
+            if participant_list[i].is_stunned < 0: participant_list[i].is_stunned = 0
 
     # Burn baby burn
     burn_no_more = [] # A list of those who are spared from burning (for now)
