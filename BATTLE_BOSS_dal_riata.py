@@ -38,6 +38,7 @@ while ally_party != [] and enemy_party != []:
     if turn >= 7:
         if turn == 7: print("Dullahan appeared to be exhausted...!")
         dal_riata.df_multi *= 0.7
+    dal_riata.s5_ready = 0
 
     # Allies' turn
     if ally_party:
@@ -70,15 +71,18 @@ while ally_party != [] and enemy_party != []:
             if enemy.is_stunned <= 0:
                 if enemy.is_furious <= 0:
                     for speed in range(enemy.spd):
-                        enemy.enemy_action_random_choice(ally_party, enemy_party)
-                        pop_dead_man(ally_party, False)
-                        # Kiri's Skill 2 counter.
-                        if kiri in ally_party and kiri.shield_hp < kiri.polaris_s2_shield_hp_detect_hit:
-                            # Detects if Kiri is still alive AND has taken shield_hp damage while it's enhanced.
-                            sleep(0.5)
-                            kiri.s2_counter(enemy)
-                            pop_dead_man(enemy_party, True)
-                        sleep(0.5); print("")
+                        if ally_party:
+                            enemy.enemy_action_random_choice(ally_party, enemy_party)
+                            pop_dead_man(ally_party, False)
+                            # Kiri's Skill 2 counter.
+                            if (kiri in ally_party and kiri.shield_block == 0
+                                    and kiri.polaris_s2_shield_broken_wait_trigger):
+                                # Detects if Kiri is still alive AND has his Shield broken while it's enhanced.
+                                sleep(0.5)
+                                kiri.s2_counter(enemy)
+                                pop_dead_man(enemy_party, True)
+                            sleep(0.5); print("")
+                        else: break
                 else:
                     enemy.na(ally_party)
                     pop_dead_man(ally_party, False)
@@ -96,18 +100,17 @@ while ally_party != [] and enemy_party != []:
             else: dal_riata_s5_target = random.choice(ally_party)
             print(f"Dullahan is preparing an attack against {dal_riata_s5_target.name}...\n")
         if turn % 5 == 1 and turn != 1:
-            dal_riata.s5(ally_party, dal_riata_s5_target); print("")
+            dal_riata.s5_cutscene(ally_party, dal_riata_s5_target); print("")
         pop_dead_man(ally_party, False)
 
         if dal_riata.s5_follow_up:
             sleep(1)
-            print("💬 If you wanted to win, you should've just left 'em weaklings behind!")
-            dal_riata.heal(dal_riata, 200)
-            print("Dullahan is on a streak of bloodlust!"); sleep(0.5)
+            print("Dullahan is on a streak of bloodlust!"); sleep(0.5); dal_riata.heal(dal_riata, 200)
             for i in range(2):
                 dal_riata.na(ally_party)
                 pop_dead_man(ally_party, False); sleep(0.5); print("")
             dal_riata.s5_follow_up = False
+            print("💬 If you wanted to win, you should've just left 'em weaklings behind!\n")
 
     # June's Skill 3
     if ally_party_june_retreat_s3 == [june]:

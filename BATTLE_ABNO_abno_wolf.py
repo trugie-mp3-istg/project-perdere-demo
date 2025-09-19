@@ -30,16 +30,12 @@ while ally_party != [] and enemy_party != []:
     # Flavor text
     if turn <= 12: print(flavor_text_list[turn - 1])
     else: print(flavor_text_list[-1])
-    if turn % 6 == 0 and abno_wolf.buff: print(f"The beast glared at {ally_party[0].name} with a malicious intent...")
-    # HP
-    participant_list = func_participant_list(ally_party, enemy_party)
-    announce_hp_mp(participant_list)
 
     # Special battle condition: Lurking Beast's SPD and damage multipliers increase after reaching 60% HP.
     # At 30% HP, SPD increases even more; has a chance to reflect damage back to attackers.
-    if abno_wolf.is_stunned > 0: abno_wolf.df_multi = 2
+    # Increases damage taken when stunned.
+    if abno_wolf.is_stunned > 0: abno_wolf.df_multi = 1.75
     else: abno_wolf.df_multi = 1.25
-
     if 0.3 * abno_wolf.max_hp < abno_wolf.cur_hp <= 0.6 * abno_wolf.max_hp:
         print(f"{abno_wolf.name} became stronger!")
         abno_wolf.spd = 3
@@ -50,6 +46,11 @@ while ally_party != [] and enemy_party != []:
         abno_wolf.spd = 4
         abno_wolf.dmg_reflect_chance = 0.5
         abno_wolf.dmg_reflect_multi = 0.25
+
+    if turn % 6 == 0 and abno_wolf.buff: print(f"\nThe beast glared at {ally_party[0].name} with wrathful eyes...")
+    # HP
+    participant_list = func_participant_list(ally_party, enemy_party)
+    announce_hp_mp(participant_list)
 
     # Allies' turn
     if ally_party:
@@ -87,15 +88,18 @@ while ally_party != [] and enemy_party != []:
                 else:
                     if enemy.is_furious <= 0:
                         for speed in range(enemy.spd):
-                            enemy.enemy_action_random_choice(ally_party, enemy_party)
-                            pop_dead_man(ally_party, False)
-                            # Kiri's Skill 2 counter.
-                            if kiri in ally_party and kiri.shield_hp < kiri.polaris_s2_shield_hp_detect_hit:
-                                # Detects if Kiri is still alive AND has taken shield_hp damage while it's enhanced.
-                                sleep(0.5)
-                                kiri.s2_counter(enemy)
-                                pop_dead_man(enemy_party, True)
-                            sleep(0.5); print("")
+                            if ally_party:
+                                enemy.enemy_action_random_choice(ally_party, enemy_party)
+                                pop_dead_man(ally_party, False)
+                                # Kiri's Skill 2 counter.
+                                if (kiri in ally_party and kiri.shield_block == 0
+                                        and kiri.polaris_s2_shield_broken_wait_trigger):
+                                    # Detects if Kiri is still alive AND has his Shield broken while it's enhanced.
+                                    sleep(0.5)
+                                    kiri.s2_counter(enemy)
+                                    pop_dead_man(enemy_party, True)
+                                sleep(0.5); print("")
+                            else: break
                     else:
                         enemy.na(ally_party)
                         pop_dead_man(ally_party, False)

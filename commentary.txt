@@ -4,17 +4,43 @@ Kiri is not quite as formidable as his teammates combat-wise, focusing on debuff
 Note: His S1, by description, "reduces the enemy's DF by 30%." But due to damage calculation, if an enemy has negative
 DF, it technically should increase it by 30% instead.
 
-June is the designated DPS and boss-killer. She has a S1 that deals good damage, a S2 that boosts her damage to cloud
-nine, and a long-winding S3 that deals guaranteed crazy damage as it ignores DF.
+June is the designated DPS and boss-killer. She has access to Bleed, a S2 that boosts her attacks, and a long-winding
+S3 that deals guaranteed crazy damage as it ignores DF. Though she is fragile and without proper self-sustenance
+(Kiri has Shield and Shield HP, Lachlan has generous healing, and Emily has effect cleansing and heals on S3 hit.)
 
-Lachlan is the designated tank and healer, with his naturally high HP and direct attack resistance, and 2 healing
-skills. His S2 compensates for his lack of damage by sacrificing healing efficiency for greatly enhanced NA should he
+Lachlan is the designated tank and healer, with his naturally high HP and 2 healing skills, 1 single-target and 1
+team-wide. His S2 compensates for his lack of damage by sacrificing healing efficiency for greatly enhanced NA should he
 need to abandon healing. Since Lachlan's sole damage output comes from his multi-hit low-damaging NA, he will struggle
 quite ceremoniously against enemies with high DF.
 
-Emily is the designated support and mook-killer. Her S1 builds burn randomly among enemies, her S2 removes all negative
+Emily is the designated support and mook-killer. Her S1 builds Burn randomly among enemies, her S2 removes all negative
 status effects from an ally, and her S3 bombards enemies team-wide with just enough damage to cripple weak mooks. As
-long as they don't possess high burn resistance, she can chip down HP slowly but surely, regardless of DF.
+long as they don't possess high Burn resistance, she can chip down HP slowly but surely, regardless of DF.
+
+
+@ Status effects:
+
+By order of appearance on the Turn announcer: Shield HP, Shield, Reflect, Bleed, Burn, Poison, Blinded, Furious,
+Stunned.
+Not appearing: Fixed DMG
+    > Shield HP (amount): A temporary bonus HP that expires after a set amount of turns. Shield HP can tank direct
+    damage, fixed damage, and reflected damage, but cannot tank Bleed, Burn, or Poison, which all directly deduct from
+    characters' HP.
+    > Shield [amount]: A non-expiring status effect that blocks all damage instance by its count. It works better than
+    Shield HP for especially-damaging direct attacks, but can easily be negated by low-damaging but frequent damage,
+    including Bleed, Burn, Poison, fixed damage, and reflected damage.
+    > Reflect {⊻}: When attacking characters with Reflect, there's a chance for attackers' direct damage to be partly
+    reflected back onto themselves.
+    > Bleed 🩸: Characters with Bleed, when attacked, take additional damage by the attacker's level. Bypasses Shield HP.
+    > Burn 🔥: Characters with Burn take additional damage by inflicter's level times inflicter's ATK divided by 2,
+    subtracted by the character's DF. Bypasses Shield HP.
+    > Poison 🧪: Characters with Poison, when attacking, take additional damage by their own level. Bypasses Shield HP.
+    > Blinded: Characters with Blind, when using skills that require manual targeting, have their targets randomized.
+    Only affects Kiri's team in practice as enemies already choose their attacks randomly, and does not affect support
+    skills the team use on each other due to different target-selecting mechanics.
+    > Furious: Characters with Furious become uncontrollable and will only perform NA this turn on their first target.
+    > Stunned: Characters with Stunned cannot act for the turn.
+    > Fixed DMG ⦿: Attacks with this effect deal a bonus instance of damage that is not affected by DF or resistance.
 
 =================
 
@@ -23,8 +49,8 @@ Dummy has 1 normal attack and 6 skills that inflict a different debuff each.
 Dummy is the strongest.
 
 
-@ perd_goon_1_1, perd_goon_1_2, perd_goon_2_1, perd_goon_2_2: Weak Perdor enemy variants.
-Though Kiri can't take on four people on his own. There truly is strength in number.
+@ perd_goon_1, perd_goon_2: Weak Perdor enemy variants.
+There is strength in number; it just doesn't matter when Backstreets Rats and Vermins go up against a Grade-A Fixer.
 
 
 @! perd_midboss. Kiri fights this woman alone in a simple fight where he can only NA or defend.
@@ -34,12 +60,12 @@ If he defends from the midboss's big attack, he wins. Else, he loses.
 @! june_mboss. A brutal, one-sided assault which Kiri for some reason manages to run away from after turn 2.
 The real battle is actually against 2 perd_hunter and 4 perd_goon. Kiri gains passive healing and a damage buff, but
 "starts" the battle with low HP.
-Prioritize taking out the hunters first and foremost.
+Prioritize taking out the Backstreets Hunters first and foremost.
 The battle results in a scripted loss once Kiri defeats the 6 Perdor mooks.
-From this point forward, Kiri can use S2.
+From this point forward, Kiri can use S2, and June joins the party.
 
 
-@ perd_hunter_1, perd_hunter_2: Perdor enemy variants with higher stats overall.
+@ perd_hunter: Perdor enemy variants with higher stats overall.
 Attacks are high-damaging but have a chance to miss. First appearance technically from June's midboss battle.
 
 
@@ -58,37 +84,66 @@ Has 3 phases, starting at 100%, 60%, and 30% HP, respectively.
 1st phase is mainly a warmup exercise.
 2nd phase is manageable. Party members' HP must be kept above half, as the wolf's increased SPD means higher chance
 of spamming its Bleed attack, as well as proc'ing Bleed more frequently overall. Dash attack must be Kiri-S2'd or
-Defended against.
+Defended against. If Kiri-S2'd, it becomes stunned next turn from the impact. This break turn can be used to quickly
+gather MP to heal up or spend MP to build up damage without worry.
 3rd phase must be dealt with as quickly as possible, as its howl attack can and will throw off any strategy with
-Bleed proc'ing and Furious status effect, preventing allies from defending or healing.
-Spamming NA and Lachlan's S3 seems to work for some reason.
-Takes 20-25 turns to beat.
+Bleed proc'ing and Furious status effect, preventing allies from defending or healing. It is recommended to have June
+at S2 LV3 ready by this point.
+Takes roughly 20 turns.
 
 
-@ sanc_fixer_0_1, sanc_fixer_0_2, sanc_fixer_0_3. A group of 3 generic Fixers in the Sanctuary, though there may be
-fewer.
-Kiri and June can beat 2 of them most of the time, and all 3 of them sometimes. The addition of Lachlan and Emily
-makes it easier.
+@ sanc_fixer_0. A group of at max 3 generic Grade-B Fixers in the Sanctuary.
+Kiri and June can beat all 3 of them most of the time.
 
 
 @ sanc_guard_a, sanc_guard_b. Robot enemies that suit better a support role, given that they're guards, not active
 combatants.
 Sanc Guard Model-A deals decent damage in one strike and may Stun enemies, but itself will temporarily shut down the
 turn after, giving the team a chance to retaliate.
+
 Sanc Guard Model-B deals low damage, but has heavy armor and can sustain itself with healing, as well as healing its
 allies.
+
+
+@! pollux, castor. Pollux is a robot modeled after the ill Castor.
+Pollux is an extremely potent healer with a LOT of team-wide healing and defensive support. Offense-wise, however, he
+is extremely lackluster, dealing less damage than the average Grade-B Fixer.
+
+Castor is a formidable fighter, only bound by his weak constitution. His damage output drops sharply at low HP.
+Kiri and Castor are roughly equal in combat capabilities if accounting for the latter's current situation. Castor bests
+him otherwise.
+
+
+@ sanc_babel_fixer. Babel Office Fixers; they have a bit of synergy when fighting together.
+In practice, a single Babel Office Fixer in the Sanctuary matches the strength of a normal Grade-B Fixer.
+As a team, however, their S2 is particularly lethal thanks to their follow-up attacks, completely overwhelming Grade-B
+Fixers in a 3v3 match-up. The key is to eliminate as many of them as quickly as possible, ideally before turn 3 when
+they can start using S2.
+Isn't team coordination and synergy Babel Office's greatest strength? Not quite, but the Operator at least doesn't
+skip over basic team combat training.
+
+
+@! lachlan_mboss. No matter how many times Kiri strikes with his sword, Lachlan stands firm still.
+The strategy is to S2 every 3 turns when Lachlan offers a clash, twice, to disarm him. Kiri has 3 chances; Lachlan uses
+an insta-kill attack on turn 11 if Kiri thinks continuously defending is a good idea.
+After disarming Lachlan, Kiri has to press the offensive and keep Lachlan's attention on him, lest he manages to pick
+up his blades, repeating the 1st phase. After S2-ing his enhanced punch, Kiri enters a scripted "victory".
+This battle is a pain in the ass to code simply for how many variables it requires.
+From this point forward, Kiri can use S3, and Lachlan joins the party.
 
 
 @!! dal_riata. Kiri, June, and Lachlan team up initially, with Emily joining from turn 8.
 Dullahan has high defense and uses a wide range of high-frequency skills that inflict and proc Bleed, requiring careful
 MP management between healing and attacking.
-Negligence of healing is punished with his big attack every 5 turns. If he successfully defeats an ally, he heals
-greatly and follows up with 2 random attacks, further devastating allies' formation.
+Negligence of healing is punished with his big attack every 5 turns. If he successfully defeats an ally, he heals a
+lot and follows up with 2 random attacks, further devastating allies' formation.
 Takes roughly 20 turns.
+In testing scenarios, tweaks to his speed can be done for balancing purposes. For example, in a 8v1 vs. Pollux, Castor,
+3 Babel Fixers, and 3 Grade-B Fixers, with 4 speed, he wipes the other party with full HP, despite being jumped first.
 
 
 @!! priam. High defense, discouraging allies from attacking him directly, while summoning minions mid-fight which they
 have to clear.
 
 
-@ kiri / marcy. Formatted like a fight, but it's just a dialogue exchange in a final encounter post-Pacifist run.
+@ marcy. Formatted like a fight, but it's just a dialogue exchange in a final encounter post-Pacifist run.

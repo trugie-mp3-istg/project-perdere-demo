@@ -1,7 +1,7 @@
 tag,flavor_text
-test_dummy,- It looks kind of cute.
+test_dummy,- It's cute.
 perd_goon_1,- Don't beat them up too badly.
-perd_goon_2,- Won't need to exert yourself here.
+perd_goon_2,- Won't need to exert myself here.
 perd_midboss,"- She's either a lunatic, or really good at acting like one."
 june_mboss,- I need to GET OUT OF HERE...!
 perd_hunter,"- Can you guys, uh, put the crossbows down...?"
@@ -10,8 +10,8 @@ abno_wolf,"- Today, we hunt wolves."
 sanc_fixer_0,- Some random Fixer. I can take 'em.
 sanc_guard_a,"- Ordinary-looking, average-casing, hammer-wielding robot. "
 sanc_guard_b,"- Tough-looking, thick-casing, drill-wielding robot."
-castor,
-pollux,
+pollux,"- Look, buddy, you don't want to challenge me to a staring contest."
+castor,- And you! Open your damn eyes!
 sanc_babelfixer,"- Lachlan's subordinates, likely."
 lachlan_mboss,"- Eyes on his blades, EYES ON HIS BLADES...!"
 sanc_fixer_1,"- A mobilized Fixer, specialized in offense."

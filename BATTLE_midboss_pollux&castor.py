@@ -1,20 +1,16 @@
-# A framework for all NORMAL PvE battles. For certain battles that use a different turn counting mechanics,
-# see battle_framework_2.
-
 from combat import *
 from characters_allies import *
-from characters_enemies import *
 from characters_enemies_boss import *
 
-ally_party = [kiri]
+ally_party = [kiri, june]
 ally_party_june_retreat_s3 = []
-enemy_party = [perd_goon_1_1, perd_goon_1_2, perd_goon_2_1, perd_goon_2_2]
+enemy_party = [pollux, castor]
 
 flavor_text_list = [
-    "Let's get this over with.",
-    "Placeholder flavor text 1.",
-    "Placeholder flavor text 2.",
-    "Placeholder flavor text 3.",
+    "Lachlan holds these two in quite high regard. Not that it matters right now.",
+    "Pollux stared at you wide-eyed. You stared back and pointed at him threateningly.",
+    "Castor barely held in his coughing fit.",
+    "Dullahan laughed roaringly.",
 ]
 
 turn = 0
@@ -86,6 +82,12 @@ while ally_party != [] and enemy_party != []:
         if kiri in ally_party: ally_party.insert(1, june)
         else: ally_party.insert(0, june)
         pop_dead_man(enemy_party, True)
+
+    # Special battle condition: After Castor is defeated, Pollux takes fixed, unblockable damage every turn end.
+    if pollux in enemy_party and castor not in enemy_party:
+        sleep(0.5)
+        pollux.cur_hp -= 50
+        print(f"{pollux.name} malfunctioned...? {pollux.name} took 50 DMG!")
 
     # Turn end
     sleep(0.5)

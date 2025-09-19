@@ -1,5 +1,4 @@
-import random
-from time import sleep
+import random; from time import sleep
 from combat import Character, burning_dictionary, calculate_mp_cost, ally_mp_gauge
 # Despite gray-outs, ally_mp_gauge is used
 from pd_parameter_stats import *
@@ -8,7 +7,7 @@ class Kiri(Character):
     def __init__(self):
         super().__init__(*kiri_pd_stats)
         self.polaris = False
-        self.polaris_s2_shield_hp_detect_hit = 0
+        self.polaris_s2_shield_broken_wait_trigger = False
         self.amber_moth = 0
 
     def action_choice(self, ally_party, enemy_party):
@@ -45,7 +44,6 @@ class Kiri(Character):
         if self.polaris: self.func_attack(target, self.na_count, self.na_mod + 0.5)
         else: self.func_attack(target, self.na_count, self.na_mod)
 
-        # Stella Polaris' effect.
         if self.polaris:
             print("Kiri consumed Stella Polaris!")
             target.is_bleeding += 1
@@ -57,7 +55,8 @@ class Kiri(Character):
             self.polaris = False
 
     def s1(self, enemy_party):
-        """Inspects an enemy. For this turn, reduces the enemy's ATK by 30%."""
+        """Inspects an enemy. For this turn, reduces the enemy's ATK by 30%.\n
+        Spends Stella Polaris to reduces all enemies' ATK by 50% instead."""
         target = self.select_target_from_enemy_party(enemy_party)
         gaze_flavor_text_master = pandas.read_csv("gaze_flavor_text.csv")
         gaze_flavor_text = (gaze_flavor_text_master.loc[gaze_flavor_text_master["tag"] == target.tag, "flavor_text"]
@@ -67,30 +66,31 @@ class Kiri(Character):
         print(gaze_flavor_text)
 
         # Weakens enemies' ATK
-        target.dmg_multi *= 0.7
-        print(f"{target.name} was analyzed! ATK down!")
+        if not self.polaris:
+            target.dmg_multi *= 0.7
+            print(f"{target.name} was analyzed! ATK down!")
+        else:
+            print("Kiri consumed Stella Polaris!")
+            for target in enemy_party:
+                target.dmg_multi *= 0.5
+                print(f"{target.name} was analyzed! ATK down!")
+            self.polaris = False
 
     def s2(self):
-        """Casts a shield and gains bonus Shield HP this turn and 1 next turn. Counts as a Defend this turn.\n
-        Spends Stella Polaris to gain even more bonus Shield HP and perform 1 counter-Attack when hit."""
-        super().defend()
-        self.shield_duration = 2
-        if self.polaris:    kiri_s2_mod = 0.3
-        else:               kiri_s2_mod = 0.2
-        shield_hp_add = int(self.max_hp * kiri_s2_mod)
-        self.shield_hp = shield_hp_add
-        print(f"Kiri activated his energy shield! Shield can take up to {shield_hp_add} DMG!")
+        """Casts a Shield blocking 2 attacks and gains Shield HP this turn and 1 next turn.\n
+        Spends Stella Polaris to extend Shield HP gain and duration and perform 1 counter-Attack when hit."""
+        self.shield_block = 2
+        if self.polaris:    kiri_s2_mod = 0.3; self.shield_hp_duration = 3; print("Kiri activated his enhanced energy shield!")
+        else:               kiri_s2_mod = 0.2; self.shield_hp_duration = 2; print("Kiri activated his energy shield!")
+        self.shield_hp = int(self.max_hp * kiri_s2_mod)
 
-        # Stella Polaris' effect.
-        if self.polaris:
-            if self.shield_duration > 0:
-                self.polaris_s2_shield_hp_detect_hit = shield_hp_add
+        if self.polaris: self.polaris_s2_shield_broken_wait_trigger = True
 
     def s2_counter(self, target):
         print("Kiri consumed Stella Polaris!")
         print(f"{self.name} counter-attacked {target.name}!")
         self.func_attack(target, self.na_count, self.na_mod)
-        self.polaris_s2_shield_hp_detect_hit = 0
+        self.polaris_s2_shield_broken_wait_trigger = False
         self.polaris = False
 
     def s3(self, enemy_party):
@@ -110,7 +110,6 @@ class Kiri(Character):
     def defend(self):
         super().defend()
         print(f"{self.name} guarded himself!")
-
 kiri_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 0, kiri_pd_stats)
 kiri = Kiri()
@@ -141,19 +140,33 @@ class June(Character):
         }
         global ally_mp_gauge
         if action in available_actions and action_cost[action] <= ally_mp_gauge:
-            available_actions[action]()
-            ally_mp_gauge = calculate_mp_cost(action_cost[action])
+            if self.red_dusk == 3:
+                if action == "s2":
+                    print("(June cannot use ✦Heartless✦ any further!)")
+                    self.action_choice(ally_party, enemy_party)
+                else:
+                    available_actions[action]()
+                    ally_mp_gauge = calculate_mp_cost(action_cost[action])
+            else:
+                if action == "s3":
+                    print("(June has yet found the right opportunity to strike...)")
+                    self.action_choice(ally_party, enemy_party)
+                else:
+                    available_actions[action]()
+                    ally_mp_gauge = calculate_mp_cost(action_cost[action])
         else:
             if action not in available_actions: print("(Invalid action!)")
             elif action_cost[action] > ally_mp_gauge: print("(Insufficient MP!)")
             self.action_choice(ally_party, enemy_party)
 
     def na(self, enemy_party):
-        """Attacks an enemy once."""
+        """Attacks an enemy once. With Skill 2's LV2 effect active, enhances Attack."""
         self.s2_update_mod()
         target = self.select_target_from_enemy_party(enemy_party)
         print(f"{self.name} attacked {target.name}!")
         self.func_attack(target, self.na_count, self.na_mod)
+        if self.red_dusk >= 2:
+            self.func_attack(target, self.na_count, self.na_mod / 2)
 
     def s1(self, enemy_party):
         """Attacks an enemy thrice, inflicting Bleed this turn."""
@@ -176,10 +189,6 @@ class June(Character):
         if self.red_dusk == 1: print("June used ✦Heartless✦! ATK up!")
         if self.red_dusk == 2: print("June used ✦Heartless✦ again! ATK up even more!")
         if self.red_dusk == 3: print("June used ✦Heartless✦ yet again! June found the right opportunity to strike!")
-        if self.red_dusk > 3:
-            self.red_dusk = 3
-            print("June took a breather!")
-            self.heal(self, 15)
 
     def s2_update_mod(self):
         if self.red_dusk == 0: self.na_mod = 0.8;   self.s1_mod = 0.6;  self.s3_mod = 0
@@ -192,7 +201,6 @@ class June(Character):
             if self.red_dusk == 3:
                 print("June is retreating to prepare a powerful strike...")
                 self.red_dusk_s3_retreat = True
-            else: print("June has yet found the right opportunity to strike...")
         else: print("Cannot retreat, as June is the only party member left!")
 
     def s3_strike(self, enemy_party):
@@ -209,20 +217,31 @@ class June(Character):
         print("..."); sleep(0.5); print("...!"); sleep(0.5)
         print(f"June used ✦Endless Red✦ and is charging at {target.name} with immense speed...!"); sleep(0.5)
         for count in range(self.s3_count):
+            if target.shield_block > 0: display_damage = False
+            else: display_damage = True
             damage, bleed_damage = self.calculate_true_damage(target, self.s3_mod)
-            print(f"{damage} DMG")
+            if display_damage:
+                print(f"{damage} DMG")
             if bleed_damage > 0:
-                target.cur_hp -= bleed_damage
-                print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
+                if target.shield_block > 0:
+                    target.shield_block -= 1
+                    print(f"🩸 {target.name}'s shield absorbed Bleed damage!")
+                else:
+                    target.cur_hp -= bleed_damage
+                    print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
             # Poison damage:
             if self.is_poisoned > 0: self.do_poison_damage()
             # If target has damage reflection:
             if target.dmg_reflect_multi > 0:
                 if random.random() < target.dmg_reflect_chance:
                     damage_reflected = round(damage * target.dmg_reflect_multi)
-                    self.cur_hp -= damage_reflected
-                    print(f"{self.name}'s attack was reflected back to sender!")
-                    print(f"{damage_reflected} DMG ⊻")
+                    if self.shield_block > 0:
+                        target.shield_block -= 1
+                        print(f"{target.name}'s shield absorbed reflected damage! ⊻")
+                    else:
+                        self.cur_hp -= damage_reflected
+                        print(f"{self.name}'s attack was reflected back to sender!")
+                        print(f"{damage_reflected} DMG ⊻")
         self.red_dusk = 0
         self.s2_update_mod()
         self.red_dusk_s3_retreat = False
@@ -231,7 +250,6 @@ class June(Character):
     def defend(self):
         super().defend()
         print(f"{self.name} guarded herself!")
-
 june_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 1, june_pd_stats)
 june = June()
@@ -299,7 +317,7 @@ class Lachlan(Character):
 
     def s2_update_mod(self):
         if self.teal_blade == 0:    self.na_count = 2; self.na_mod = 0.5; self.heal_multi = 1
-        else:                       self.na_count = 3; self.na_mod = 0.6; self.heal_multi = 0.5
+        else:                       self.na_count = 3; self.na_mod = 0.7; self.heal_multi = 0.5
 
     def s3(self, ally_party):
         """Heals all allies by 40% of Lachlan's Max HP."""
@@ -310,7 +328,6 @@ class Lachlan(Character):
     def defend(self):
         super().defend()
         print(f"{self.name} guarded himself!")
-
 lachlan_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 2, lachlan_pd_stats)
 lachlan = Lachlan()
@@ -424,7 +441,6 @@ class Emily(Character):
     def defend(self):
         super().defend()
         print(f"{self.name} guarded herself!")
-
 emily_pd_stats = []
 insert_stat_by_id_num(pd_stats_column_list, 3, emily_pd_stats)
 emily = Emily()

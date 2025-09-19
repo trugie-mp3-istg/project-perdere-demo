@@ -13,9 +13,7 @@ class Character:
 
         # Raw stats attributes:
         self.lv = lv; self.max_hp = int(hp); self.cur_hp = int(hp)
-        self.shield_hp = 0; self.shield_duration = 0
-        self.atk = int(atk); self.df = int(df)
-        self.spd = int(spd)
+        self.atk = int(atk); self.df = int(df); self.spd = int(spd)
 
         # Direct attacks, bleed, and burn resistance attributes:
         self.direct_res = direct_res
@@ -38,6 +36,10 @@ class Character:
 
         # Miscellaneous attributes:
         self.dmg_multi = 1; self.heal_multi = 1; self.df_multi = 1
+        self.is_defending = False
+        # For positive DF, the higher df_multi is, the lower damage one takes.
+        # The opposite goes for negative DF.
+        self.shield_hp = 0; self.shield_hp_duration = 0; self.shield_block = 0
         self.dmg_reflect_chance = 0; self.dmg_reflect_multi = 0
 
     def compare_lv(self, target):
@@ -55,14 +57,17 @@ class Character:
 
         damage = int(round((base_dmg - target.df / 2 * target.df_multi) * lv_diff * deviation) * target.direct_res * self.dmg_multi)
         if damage < 1: damage = 1
-        if target.shield_hp > 0:
-            if target.shield_hp >= damage: target.shield_hp -= damage
-            else:
-                damage_left = damage - target.shield_hp
-                target.shield_hp -= damage - damage_left
-                print(f"{target.name}'s shield broke!")
-                target.cur_hp -= damage_left
-        else: target.cur_hp -= damage
+        if target.shield_block > 0:
+            target.shield_block -= 1
+            print(f"{target.name}'s shield absorbed a direct attack!")
+        else:
+            if target.shield_hp > 0:
+                if target.shield_hp >= damage: target.shield_hp -= damage
+                else:
+                    damage_left = damage - target.shield_hp
+                    target.shield_hp -= damage - damage_left
+                    target.cur_hp -= damage_left
+            else: target.cur_hp -= damage
 
         if target.is_bleeding > 0: bleed_damage = self.do_bleed_damage(target)
         else: bleed_damage = 0
@@ -77,15 +82,18 @@ class Character:
 
         damage = int(round(base_dmg * lv_diff * deviation) * target.direct_res * self.dmg_multi)
         if damage < 1: damage = 1
-        if target.shield_hp > 0:
-            if target.shield_hp >= damage:
-                target.shield_hp -= damage
-            else:
-                damage_left = damage - target.shield_hp
-                target.shield_hp -= damage - damage_left
-                print(f"{target.name}'s shield broke!")
-                target.cur_hp -= damage_left
-        else: target.cur_hp -= damage
+        if target.shield_block > 0:
+            target.shield_block -= 1
+            print(f"{target.name}'s shield absorbed a direct attack!")
+        else:
+            if target.shield_hp > 0:
+                if target.shield_hp >= damage:
+                    target.shield_hp -= damage
+                else:
+                    damage_left = damage - target.shield_hp
+                    target.shield_hp -= damage - damage_left
+                    target.cur_hp -= damage_left
+            else: target.cur_hp -= damage
 
         if target.is_bleeding > 0: bleed_damage = self.do_bleed_damage(target)
         else: bleed_damage = 0
@@ -112,36 +120,54 @@ class Character:
         return target
 
     def func_attack(self, target, count, mod):
-        """A normal attack. Needs target choosing mechanics and a text indicator to work."""
+        """An attack. Needs target choosing mechanics and a text indicator to work."""
         for count in range(count):
+            if target.shield_block > 0: display_damage = False
+            else: display_damage = True
             damage, bleed_damage = self.calculate_damage(target, mod)
-            print(f"{damage} DMG")
+            if display_damage:
+                print(f"{damage} DMG")
             if bleed_damage > 0:
-                target.cur_hp -= bleed_damage
-                print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
+                if target.shield_block > 0:
+                    target.shield_block -= 1
+                    print(f"🩸 {target.name}'s shield absorbed Bleed damage!")
+                else:
+                    target.cur_hp -= bleed_damage
+                    print(f"🩸 {target.name} took {bleed_damage} bleed DMG!")
+            # If an attack skill does not directly inherit func_attack, copy the 12 lines above
             # Poison damage:
             if self.is_poisoned > 0: self.do_poison_damage()
             # If target has damage reflection:
             if target.dmg_reflect_multi > 0:
                 if random.random() < target.dmg_reflect_chance:
                     damage_reflected = round(damage * target.dmg_reflect_multi)
-                    self.cur_hp -= damage_reflected
-                    print(f"{self.name}'s attack was reflected back to sender!")
-                    print(f"{damage_reflected} DMG ⊻")
+                    if self.shield_block > 0:
+                        target.shield_block -= 1
+                        print(f"{target.name}'s shield absorbed reflected damage! ⊻")
+                    else:
+                        self.cur_hp -= damage_reflected
+                        print(f"{self.name}'s attack was reflected back to sender!")
+                        print(f"{damage_reflected} DMG ⊻")
+            # If an attack skill does not directly inherit func_attack, copy the 7 lines above
 
-    def func_attack_fixed_damage(self, target, count, fdamage):
+    def do_fixed_damage(self, target, count, fdamage):
         """Like func_attack, but deals fixed damage. Is a special effect on its own, so does not trigger
-        Bleed, Poison, or damage reflection."""
+        Bleed, Poison, or Reflect."""
         for count in range(count):
-            if target.shield_hp > 0:
-                if target.shield_hp >= fdamage:
-                    target.shield_hp -= fdamage
-                else:
-                    damage_left = fdamage - target.shield_hp
-                    target.shield_hp -= fdamage - damage_left
-                    print(f"{target.name}'s shield broke!")
-                    target.cur_hp -= damage_left
-            else: target.cur_hp -= fdamage
+            if target.shield_block > 0:
+                target.shield_block -= 1
+                print(f"{target.name}'s shield absorbed fixed damage! ⦿")
+            else:
+                if target.shield_hp > 0:
+                    if target.shield_hp >= fdamage:
+                        target.shield_hp -= fdamage
+                    else:
+                        damage_left = fdamage - target.shield_hp
+                        target.shield_hp -= fdamage - damage_left
+                        print(f"{target.name}'s shield broke!")
+                        target.cur_hp -= damage_left
+                else: target.cur_hp -= fdamage
+                print(f"{fdamage} DMG ⦿")
 
     def do_bleed_damage(self, inflicted):
         """Calculates bleed damage every time the enemy is hit with a direct attack."""
@@ -162,8 +188,12 @@ class Character:
         deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
         poison_damage = round(self.lv * deviation)
         if poison_damage < 0: poison_damage = 0
-        self.cur_hp -= poison_damage
-        print(f"🧪 {self.name} took {poison_damage} poison DMG!")
+        if self.shield_block > 0:
+            self.shield_block -= 1
+            print(f"🧪 {self.name}'s shield absorbed Poison damage!")
+        else:
+            self.cur_hp -= poison_damage
+            print(f"🧪 {self.name} took {poison_damage} poison DMG!")
 
     def heal(self, target, amount):
         """Calculates a healing action."""
@@ -179,6 +209,7 @@ class Character:
             print(f"🞧 {target.name}'s HP was maxed out!")
 
     def defend(self):
+        self.is_defending = True
         self.df_multi *= 2
         return self.df_multi
 
@@ -192,8 +223,6 @@ def calculate_mp_cost(mp_cost):
     if ally_mp_gauge > 10: ally_mp_gauge = 10
     elif ally_mp_gauge < 0: ally_mp_gauge = 0
     return ally_mp_gauge
-
-burning_dictionary = {} # Stores every burn damage instance in a dictionary to be accessed at turn end.
 
 def func_participant_list(ally_party, enemy_party):
     participant_list = []
@@ -213,12 +242,18 @@ def announce_hp_mp(participant_list=None):
         participant_list = []
     for person in participant_list:
         if person != -1:
-            shield_hp_yes = ""; bleeding_yes = ""; burning_yes = ""; poisoned_yes = ""
-            if person.shield_hp > 0: shield_hp_yes = f"({person.shield_hp}) "
-            if person.is_bleeding > 0: bleeding_yes = "🩸 "
-            if person.is_burning > 0: burning_yes = "🔥 "
-            if person.is_poisoned > 0: poisoned_yes = "🧪 "
-            print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} {shield_hp_yes}{bleeding_yes}{burning_yes}{poisoned_yes}")
+            announce_shield_hp = ""; announce_shield_block = ""; announce_reflect = ""
+            announce_bleeding = ""; announce_burning = ""; announce_poisoned = ""
+
+            if person.shield_hp > 0: announce_shield_hp = f"({person.shield_hp}) "
+            if person.shield_block > 0: announce_shield_block = f"[{person.shield_block}] "
+            if person.dmg_reflect_chance > 0 and person.dmg_reflect_multi > 0: announce_reflect = "{⊻} "
+            if person.is_bleeding > 0: announce_bleeding = "🩸 "
+            if person.is_burning > 0: announce_burning = "🔥 "
+            if person.is_poisoned > 0: announce_poisoned = "🧪 "
+            print(f"❤ {person.name}: {person.cur_hp}/{person.max_hp} "
+                  f"{announce_shield_hp}{announce_shield_block}{announce_reflect}"
+                  f"{announce_bleeding}{announce_burning}{announce_poisoned}")
             if person.is_stunned <= 0:
                 if person.is_blind > 0: print(f"{person.name} is Blinded! Target randomized!")
                 if person.is_furious > 0: print(f"{person.name} is Furious and will automatically Attack the first enemy!")
@@ -228,6 +263,7 @@ def announce_hp_mp(participant_list=None):
             print(f"★ MP: {ally_mp_gauge}/10")
             print("---- ---- ---- ----")
 
+burning_dictionary = {} # Stores every burn damage instance in a dictionary to be accessed at turn end.
 def end_turn(participant_list):
     """Performs janitory works, such as cleaning up status effects and burning down vermin."""
 
@@ -237,10 +273,12 @@ def end_turn(participant_list):
             participant_list[i].dmg_multi = 1
             participant_list[i].df_multi = 1
 
-            participant_list[i].shield_duration -= 1
-            if participant_list[i].shield_duration <= 0:
-                participant_list[i].shield_duration = 0
+            participant_list[i].shield_hp_duration -= 1
+            if participant_list[i].shield_hp_duration <= 0:
+                participant_list[i].shield_hp_duration = 0
                 participant_list[i].shield_hp = 0
+
+            participant_list[i].is_defending = False
 
             participant_list[i].is_bleeding -= 1
             if participant_list[i].is_bleeding < 0: participant_list[i].is_bleeding = 0
@@ -263,10 +301,13 @@ def end_turn(participant_list):
     # Burn baby burn
     burn_no_more = [] # A list of those who are spared from burning (for now)
     for victim in burning_dictionary:
-        victim.cur_hp -= burning_dictionary[victim]
-        print(f"🔥 {victim.name} took {burning_dictionary[victim]} burn DMG!")
-        if victim.is_burning == 0:
-            burn_no_more.append(victim)
+        if victim.shield_block > 0:
+            victim.shield_block -= 1
+            print(f"🔥 {victim.name}'s shield absorbed Burn damage!")
+        else:
+            victim.cur_hp -= burning_dictionary[victim]
+            print(f"🔥 {victim.name} took {burning_dictionary[victim]} burn DMG!")
+        if victim.is_burning == 0: burn_no_more.append(victim)
     for unvictim in burn_no_more: # Remove them out of the burndict after iteration
         del burning_dictionary[unvictim]
 

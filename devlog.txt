@@ -33,3 +33,7 @@ function where it could only operate on greedily correct inputs and would crash 
             Reworked Kiri's kit to fit a more supportive debuff role.
             Finished June's midboss fight.
 2025.9.7:   Added new enemies. Rewrote code for the Turn Start HP announcer.
+2025.9.9:   Added new enemies. Added an arena mode to test out enemies against one another.
+2025.9.10:  Added new enemies and a new status effect: Shield. Not Shield HP, Shield.
+2025.9.11:  Debugging and balancing.
+2025.9.12:  Debugging and balancing. Buffed Kiri's S2.

@@ -8,7 +8,7 @@ enemy_party = [perd_midboss]
 
 flavor_text_list = [
     "You won't have to listen to this giggle for long.",
-    "... She might be mad.",
+    "... She might be a little insane.",
     "You don't feel any particular strong emotion toward this situation you're in."
 ]
 
@@ -51,15 +51,18 @@ while ally_party != [] and enemy_party != []:
                 if turn != 3:
                     if enemy.is_furious <= 0:
                         for speed in range(enemy.spd):
-                            enemy.enemy_action_random_choice(ally_party, enemy_party)
-                            pop_dead_man(ally_party, False)
-                            # Kiri's Skill 2 counter.
-                            if kiri in ally_party and kiri.shield_hp < kiri.polaris_s2_shield_hp_detect_hit:
-                                # Detects if Kiri is still alive AND has taken shield_hp damage while it's enhanced.
-                                sleep(0.5)
-                                kiri.s2_counter(enemy)
-                                pop_dead_man(enemy_party, True)
-                            sleep(0.5); print("")
+                            if ally_party:
+                                enemy.enemy_action_random_choice(ally_party, enemy_party)
+                                pop_dead_man(ally_party, False)
+                                # Kiri's Skill 2 counter.
+                                if (kiri in ally_party and kiri.shield_block == 0
+                                        and kiri.polaris_s2_shield_broken_wait_trigger):
+                                    # Detects if Kiri is still alive AND has his Shield broken while it's enhanced.
+                                    sleep(0.5)
+                                    kiri.s2_counter(enemy)
+                                    pop_dead_man(enemy_party, True)
+                                sleep(0.5); print("")
+                            else: break
                     else:
                         enemy.na(ally_party)
                         pop_dead_man(ally_party, False)
