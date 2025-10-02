@@ -133,9 +133,9 @@ class June(Character):
         }
         action_cost = {
             "na": -1,
-            "s1": 4,
+            "s1": 3,
             "s2": 3,
-            "s3": 0,
+            "s3": 1,
             "df": -1
         }
         global ally_mp_gauge
@@ -181,18 +181,19 @@ class June(Character):
     def s2(self):
         """LV1: Charges up. Attacks deal slightly more damage.\n
         LV2: Charges up. Attacks deal moderately more damage.\n
-        LV3: Prepares for a powerful strike.\n
-        Using Skill 2 while it's at LV3 heals 15 HP."""
+        LV3: Heals 15 HP. Prepares for a powerful strike."""
 
         self.red_dusk += 1
         self.s2_update_mod()
         if self.red_dusk == 1: print("June used ✦Heartless✦! ATK up!")
         if self.red_dusk == 2: print("June used ✦Heartless✦ again! ATK up even more!")
-        if self.red_dusk == 3: print("June used ✦Heartless✦ yet again! June found the right opportunity to strike!")
+        if self.red_dusk == 3:
+            self.heal(self, 15)
+            print("June used ✦Heartless✦ yet again! June found the right opportunity to strike!")
 
     def s2_update_mod(self):
         if self.red_dusk == 0: self.na_mod = 0.8;   self.s1_mod = 0.6;  self.s3_mod = 0
-        if self.red_dusk == 1: self.na_mod = 0.9;   self.s1_mod = 0.75; self.s3_mod = 0
+        if self.red_dusk == 1: self.na_mod = 0.9;   self.s1_mod = 0.75;  self.s3_mod = 0
         if self.red_dusk == 2: self.na_mod = 1;     self.s1_mod = 1;    self.s3_mod = 0
         if self.red_dusk == 3: self.na_mod = 1;     self.s1_mod = 1;    self.s3_mod = 6
 
@@ -208,6 +209,7 @@ class June(Character):
         Retreats this turn. At turn end, attacks the enemy with the highest HP once,
         dealing massive damage and ignoring enemy's defense. On use, resets Skill 2's charges to LV0."""
         # Select target.
+        self.s2_update_mod()
         max_hp_find = []
         for enemy in enemy_party: max_hp_find.append(enemy.cur_hp)
         max_hp_found = max(max_hp_find)

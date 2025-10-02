@@ -24,6 +24,8 @@ flavor_text_list = [
 turn = 0
 while ally_party != [] and enemy_party != []:
 
+    june.red_dusk = 3
+
     abno_wolf.dmg_multi = 0.5
     # Turn start
     turn += 1; announce_new_turn(turn)

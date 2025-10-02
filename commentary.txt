@@ -1,22 +1,4 @@
-@ kiri, june, lachlan, emily.
-
-Kiri is not quite as formidable as his teammates combat-wise, focusing on debuffing enemies as a support role.
-Note: His S1, by description, "reduces the enemy's DF by 30%." But due to damage calculation, if an enemy has negative
-DF, it technically should increase it by 30% instead.
-
-June is the designated DPS and boss-killer. She has access to Bleed, a S2 that boosts her attacks, and a long-winding
-S3 that deals guaranteed crazy damage as it ignores DF. Though she is fragile and without proper self-sustenance
-(Kiri has Shield and Shield HP, Lachlan has generous healing, and Emily has effect cleansing and heals on S3 hit.)
-
-Lachlan is the designated tank and healer, with his naturally high HP and 2 healing skills, 1 single-target and 1
-team-wide. His S2 compensates for his lack of damage by sacrificing healing efficiency for greatly enhanced NA should he
-need to abandon healing. Since Lachlan's sole damage output comes from his multi-hit low-damaging NA, he will struggle
-quite ceremoniously against enemies with high DF.
-
-Emily is the designated support and mook-killer. Her S1 builds Burn randomly among enemies, her S2 removes all negative
-status effects from an ally, and her S3 bombards enemies team-wide with just enough damage to cripple weak mooks. As
-long as they don't possess high Burn resistance, she can chip down HP slowly but surely, regardless of DF.
-
+=================
 
 @ Status effects:
 
@@ -127,7 +109,7 @@ skip over basic team combat training.
 The strategy is to S2 every 3 turns when Lachlan offers a clash, twice, to disarm him. Kiri has 3 chances; Lachlan uses
 an insta-kill attack on turn 11 if Kiri thinks continuously defending is a good idea.
 After disarming Lachlan, Kiri has to press the offensive and keep Lachlan's attention on him, lest he manages to pick
-up his blades, repeating the 1st phase. After S2-ing his enhanced punch, Kiri enters a scripted "victory".
+up his blades, repeating the 1st phase. After S2-ing his enhanced punch, Kiri enters a scripted "loss".
 This battle is a pain in the ass to code simply for how many variables it requires.
 From this point forward, Kiri can use S3, and Lachlan joins the party.
 

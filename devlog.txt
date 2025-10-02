@@ -37,3 +37,4 @@ function where it could only operate on greedily correct inputs and would crash 
 2025.9.10:  Added new enemies and a new status effect: Shield. Not Shield HP, Shield.
 2025.9.11:  Debugging and balancing.
 2025.9.12:  Debugging and balancing. Buffed Kiri's S2.
+2025.9.19:  Balancing.

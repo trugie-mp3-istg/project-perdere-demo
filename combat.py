@@ -51,8 +51,7 @@ class Character:
     def calculate_damage(self, target, mod):
         """Calculates attacks. Used for normal attacks and skills."""
         deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
-        base_dmg = self.atk * mod       # How much a hit hurts on paper, not including enemies' DEF, resistances,
-                                        # and damage deviation.
+        base_dmg = self.atk * mod
         lv_diff = self.compare_lv(target)
 
         damage = int(round((base_dmg - target.df / 2 * target.df_multi) * lv_diff * deviation) * target.direct_res * self.dmg_multi)
@@ -77,10 +76,11 @@ class Character:
         """Calculates attacks that ignore defense. Used for certain attacks."""
         deviation = random.uniform(0.8, 1.2) # Damage deviates between 80% and 120%
         base_dmg = self.atk * mod
-        """How much a hit hurts on paper, not including enemies' DEF, resistances, and damage deviation."""
         lv_diff = self.compare_lv(target)
 
-        damage = int(round(base_dmg * lv_diff * deviation) * target.direct_res * self.dmg_multi)
+        target_df_final = target.df / 2 * target.df_multi
+        if target_df_final > 0: target_df_final = 0
+        damage = int(round((base_dmg - target_df_final) * lv_diff * deviation) * target.direct_res * self.dmg_multi)
         if damage < 1: damage = 1
         if target.shield_block > 0:
             target.shield_block -= 1
